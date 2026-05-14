@@ -1,0 +1,4428 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QG · Cocaïne and refund® Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!-- ═════ FLATPICKR — CDN officiel ═════ -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js" onerror="this.onerror=null;var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js';document.head.appendChild(s);"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/fr.js" onerror="this.onerror=null;var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/fr.js';document.head.appendChild(s);"></script>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" onerror="this.onerror=null;var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/firebase@9.23.0/compat/firebase-app-compat.min.js';document.head.appendChild(s);"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js" onerror="this.onerror=null;var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/firebase@9.23.0/compat/firebase-firestore-compat.min.js';document.head.appendChild(s);"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" onerror="this.onerror=null;var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';document.head.appendChild(s);"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;transition:all .3s ease}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'Outfit',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;line-height:1.5;min-height:100vh}
+:root{
+  --bg:#f5f5f7;--card:#ffffff;--card-2:#fafafc;--text:#1d1d1f;--text-2:#6e6e73;--text-3:#a1a1a6;
+  --border:rgba(0,0,0,.07);--border-strong:rgba(0,0,0,.12);
+  --red:#E60000;--red-dark:#C00000;--red-glow:rgba(230,0,0,.28);--red-soft:rgba(230,0,0,.08);
+  --green:#34C759;--green-soft:rgba(52,199,89,.12);
+  --orange:#FF9500;--orange-soft:rgba(255,149,0,.14);
+  --yellow:#FFCC00;--yellow-soft:rgba(255,204,0,.18);
+  --gold:#D4AF37;--gold-soft:rgba(212,175,55,.18);
+  --blue:#007AFF;--gray-soft:rgba(120,120,128,.12);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.04),0 0 0 1px rgba(0,0,0,.02);
+  --shadow-md:0 4px 16px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.03);
+  --shadow-lg:0 18px 50px rgba(0,0,0,.1),0 0 0 1px rgba(0,0,0,.04);
+  --r-xl:24px;--r-lg:18px;--r-md:14px;--r-sm:12px;
+  --ease:cubic-bezier(.25,.46,.45,.94);
+  --t:.3s ease;
+}
+/* ═════ DARK MODE OLED BLACK ═════ */
+[data-theme="dark"]{
+  --bg:#000000;--card:#111111;--card-2:#0a0a0a;--text:#f5f5f7;--text-2:#98989d;--text-3:#636366;
+  --border:rgba(255,255,255,.06);--border-strong:rgba(255,255,255,.12);
+  --red-soft:rgba(230,0,0,.18);--gray-soft:rgba(120,120,128,.18);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.03);
+  --shadow-md:0 4px 16px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.04);
+  --shadow-lg:0 18px 50px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.05);
+}
+/* Désactive transition sur certaines props pour éviter glitches */
+canvas,svg *,img{transition:none}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;border:none;background:none;font-family:inherit;color:inherit}
+input,select,textarea{font-family:inherit;outline:none;border:none;color:inherit;background:transparent}
+ul,ol{list-style:none}
+::selection{background:var(--red);color:#fff}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--gray-soft);border-radius:10px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:var(--text-3)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 1 — LOGIN PURETÉ ABSOLUE
+   Fond noir mat profond, panneau centré flexbox, AUCUN scanline / dégradé rouge.
+   ═══════════════════════════════════════════════════════════════════ */
+#loginScreen{
+  position:fixed;inset:0;z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  background:#000000;            /* Noir mat strict */
+  padding:20px;
+}
+[data-theme="dark"] #loginScreen{background:#000000}
+/* Encart glassmorphism gris foncé minimaliste */
+.login-modal{
+  background:rgba(28,28,30,.72);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:22px;
+  width:100%;max-width:400px;
+  padding:44px 34px 36px;
+  box-shadow:0 30px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);
+  animation:loginIn .5s cubic-bezier(.34,1.56,.64,1);
+  color:#f5f5f7;
+}
+@keyframes loginIn{from{opacity:0;transform:scale(.94) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.login-modal h1{font-size:24px;font-weight:700;letter-spacing:-.5px;text-align:center;margin-bottom:30px;color:#f5f5f7}
+/* AUDIT LOGOS — logo de marque centré au-dessus du titre.
+   Conteneur à hauteur fixe → la modal ne saute pas si le logo échoue.
+   object-fit:contain garantit aucune distorsion peu importe le fichier source. */
+.lf-logo-box{
+  width:100%;height:64px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:18px;
+  overflow:hidden;
+}
+.lf-logo-box img{
+  max-width:75%;
+  max-height:100%;
+  width:auto;height:auto;
+  object-fit:contain;     /* NON NÉGOCIABLE */
+  display:block;
+}
+.lf-logo-fb{
+  display:none;
+  font-size:11px;font-weight:800;letter-spacing:1.5px;
+  text-transform:uppercase;color:#98989d;
+}
+.lf-group{margin-bottom:14px}
+.lf-group label{display:block;font-size:10.5px;font-weight:700;color:#98989d;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding-left:4px}
+.lf-input{
+  width:100%;padding:14px 18px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;font-size:15px;font-weight:500;color:#f5f5f7;
+}
+.lf-input::placeholder{color:#636366}
+.lf-input:focus{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.06);box-shadow:0 0 0 3px rgba(255,255,255,.04)}
+.lf-btn{
+  width:100%;padding:14px;
+  background:#f5f5f7;color:#000;
+  font-size:14px;font-weight:700;
+  border-radius:12px;letter-spacing:.2px;
+  margin-top:18px;
+}
+.lf-btn:hover{background:#fff;transform:translateY(-1px)}
+.lf-error{color:#ff453a;font-size:12.5px;font-weight:600;text-align:center;margin-top:12px;min-height:16px}
+
+/* ═══════════════════════════════════════════════════════════════════
+   APP SHELL (sidebar + main)
+   ═══════════════════════════════════════════════════════════════════ */
+#app{display:none;min-height:100vh}
+#app.active{display:flex}
+#sidebar{
+  position:fixed;top:0;left:0;bottom:0;width:260px;z-index:50;
+  background:var(--card);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
+}
+
+/* ═════ SECTION 1.3 / 1.4 — LOGO sidebar : conteneur fixe, object-fit:contain ═════ */
+.sb-head{
+  padding:20px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:flex-start;
+  height:100px;flex-shrink:0;
+}
+/* Conteneur en haut À GAUCHE de la sidebar — taille FIXE garantie */
+#sbLogoBox{
+  width:100%;
+  height:60px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  flex-shrink:0;
+  /* L'espace alloué reste intact même si l'image ne charge pas */
+}
+#sbLogoBox img{
+  max-width:100%;
+  max-height:100%;
+  width:auto;
+  height:auto;
+  object-fit:contain;   /* NON NÉGOCIABLE */
+  display:block;
+}
+.sb-logo-fallback{
+  width:100%;height:60px;
+  background:linear-gradient(135deg,var(--red),var(--red-dark));
+  border-radius:14px;
+  display:none;align-items:center;justify-content:center;
+  color:#fff;font-weight:900;font-size:13px;letter-spacing:.4px;
+  box-shadow:0 4px 12px var(--red-glow);text-align:center;padding:0 12px;line-height:1.15;
+}
+
+.sb-nav{flex:1;padding:14px 12px;overflow-y:auto}
+.sb-nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:var(--r-sm);font-size:14px;font-weight:600;color:var(--text-2);cursor:pointer;position:relative;margin-bottom:3px}
+.sb-nav-item:hover{background:var(--gray-soft);color:var(--text)}
+.sb-nav-item.active{background:var(--red);color:#fff;box-shadow:0 4px 14px var(--red-glow)}
+.sb-nav-item svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.sb-badge{position:absolute;top:50%;right:14px;transform:translateY(-50%);min-width:20px;height:20px;padding:0 6px;background:var(--red);color:#fff;border-radius:50px;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;animation:badgePulse 2s infinite}
+.sb-nav-item.active .sb-badge{background:#fff;color:var(--red)}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(230,0,0,.5)}50%{box-shadow:0 0 0 6px rgba(230,0,0,0)}}
+.sb-foot{padding:14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center}
+.sb-theme,.sb-logout{flex:1;padding:10px;background:var(--card-2);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;font-weight:700;color:var(--text-2)}
+.sb-theme:hover,.sb-logout:hover{background:var(--gray-soft);color:var(--text)}
+.sb-theme svg,.sb-logout svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+#main{flex:1;margin-left:260px;padding:32px 36px 60px;min-width:0}
+#topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;gap:16px;flex-wrap:wrap}
+.tb-title{font-size:30px;font-weight:800;letter-spacing:-.8px;line-height:1.1}
+.tb-title small{display:block;font-size:13px;font-weight:500;color:var(--text-2);margin-top:4px;letter-spacing:0}
+.tb-tools{display:flex;align-items:center;gap:10px}
+.tb-session{padding:8px 14px;background:var(--card);border:1px solid var(--border);border-radius:50px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--text-2);display:flex;align-items:center;gap:8px}
+.tb-session::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:dotPulse 1.5s ease infinite}
+@keyframes dotPulse{0%,100%{opacity:1}50%{opacity:.4}}
+.btn-burger-mobile{display:none;width:40px;height:40px;border-radius:50%;background:var(--card);border:1px solid var(--border);align-items:center;justify-content:center}
+.btn-burger-mobile svg{width:20px;height:20px;fill:none;stroke:var(--text);stroke-width:2;stroke-linecap:round}
+
+/* ═══════════════════════════════════════════════════════════════════
+   COMMON
+   ═══════════════════════════════════════════════════════════════════ */
+.view{display:none;animation:viewFade .4s var(--ease)}
+.view.active{display:block}
+@keyframes viewFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;box-shadow:var(--shadow-sm)}
+.card:hover{box-shadow:var(--shadow-md)}
+.section-title{font-size:18px;font-weight:800;letter-spacing:-.3px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-title svg{width:18px;height:18px;fill:none;stroke:var(--red);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn{padding:11px 22px;border-radius:50px;font-size:13px;font-weight:700;letter-spacing:.3px;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-transform:uppercase}
+.btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.btn-red{background:var(--red);color:#fff;box-shadow:0 4px 14px var(--red-glow)}
+.btn-red:hover{background:var(--red-dark);transform:translateY(-1px);box-shadow:0 8px 24px var(--red-glow)}
+.btn-ghost{background:var(--card-2);color:var(--text-2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--gray-soft);color:var(--text)}
+.btn-tg{background:#229ED9;color:#fff;box-shadow:0 4px 14px rgba(34,158,217,.3)}
+.btn-tg:hover{background:#1c87b8;transform:translateY(-1px);box-shadow:0 8px 24px rgba(34,158,217,.4)}
+.btn-danger{background:var(--card-2);color:var(--red);border:1px solid var(--red-soft)}
+.btn-danger:hover{background:var(--red);color:#fff}
+
+/* Inputs / textareas PREMIUM — FIX BUG : box-sizing border-box obligatoire pour ne pas déborder */
+.field-input,.field-textarea{
+  width:100%;
+  box-sizing:border-box;
+  padding:12px 16px;
+  background:var(--card-2);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  font-size:14px;font-weight:500;
+}
+.field-input:focus,.field-textarea:focus{border-color:var(--red);box-shadow:0 0 0 4px var(--red-soft);background:var(--card);transform:translateY(-1px)}
+/* SECTION 5.3 — textareas Articles & Notes : hauteur réduite, scrollbar verticale propre */
+.field-textarea{
+  resize:none;             /* pas de redimensionnement libre */
+  overflow-y:auto;
+  min-height:64px;
+  max-height:140px;
+  line-height:1.5;
+  font-family:inherit;
+}
+.field-textarea::-webkit-scrollbar{width:6px}
+.field-textarea::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:6px;border:none}
+.field-label{display:block;font-size:10px;font-weight:800;color:var(--text-2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;padding-left:2px}
+
+/* Sous-titres rouges dans le formulaire */
+.subsection-title{font-size:12px;font-weight:800;color:var(--red);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;padding-left:2px;display:flex;align-items:center;gap:8px}
+.subsection-title::before{content:'';width:14px;height:2px;background:var(--red);border-radius:2px}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 3 — CUSTOM DROPDOWN (remplace 100% des balises <select>)
+   ═══════════════════════════════════════════════════════════════════ */
+.cdd{position:relative;width:100%;font-family:inherit;box-sizing:border-box}
+.cdd-trigger{
+  width:100%;
+  box-sizing:border-box;        /* FIX BUG — n'élargit pas selon le contenu */
+  padding:12px 42px 12px 16px;
+  background:var(--card-2);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  font-size:14px;font-weight:600;
+  color:var(--text);
+  cursor:pointer;
+  display:flex;align-items:center;gap:10px;
+  text-align:left;
+  min-height:44px;
+  position:relative;
+  transition:border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.cdd-trigger:hover{border-color:var(--border-strong)}
+.cdd.open .cdd-trigger,
+.cdd-trigger:focus{border-color:var(--red);box-shadow:0 0 0 4px var(--red-soft);background:var(--card)}
+.cdd-trigger .cdd-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cdd-trigger .cdd-text.placeholder{color:var(--text-3);font-weight:500}
+.cdd-trigger .cdd-chevron{
+  position:absolute;right:14px;top:50%;
+  width:14px;height:14px;
+  transform:translateY(-50%);
+  pointer-events:none;
+  transition:transform .25s var(--ease);
+}
+.cdd.open .cdd-trigger .cdd-chevron{transform:translateY(-50%) rotate(180deg)}
+.cdd-trigger .cdd-chevron svg{width:14px;height:14px;fill:none;stroke:var(--text-2);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;display:block}
+/* Logo aligné à gauche du trigger */
+.cdd-trigger .cdd-logo{
+  width:24px;height:24px;border-radius:6px;
+  background:transparent;        /* SECTION 1 — plus de fond blanc forcé */
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;overflow:hidden;
+}
+.cdd-trigger .cdd-logo img{width:100%;height:100%;object-fit:contain;object-position:center;padding:0}
+[data-theme="dark"] .cdd-trigger .cdd-logo{background:rgba(255,255,255,.04)}
+
+/* Liste flottante glassmorphism */
+.cdd-menu{
+  position:absolute;
+  top:calc(100% + 6px);
+  left:0;right:0;
+  z-index:120;
+  background:rgba(30,30,30,.92);
+  backdrop-filter:blur(22px) saturate(180%);
+  -webkit-backdrop-filter:blur(22px) saturate(180%);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  padding:6px;
+  box-shadow:0 20px 50px rgba(0,0,0,.45),0 0 0 1px rgba(0,0,0,.04);
+  max-height:280px;overflow-y:auto;
+  opacity:0;visibility:hidden;
+  transform:translateY(-6px) scale(.98);
+  transition:opacity .22s var(--ease), transform .22s var(--ease), visibility .22s linear;
+  list-style:none;margin:0;
+}
+.cdd.open .cdd-menu{
+  opacity:1;visibility:visible;
+  transform:translateY(0) scale(1);
+}
+[data-theme="light"] .cdd-menu{
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(0,0,0,.06);
+  box-shadow:0 20px 50px rgba(0,0,0,.18),0 0 0 1px rgba(0,0,0,.04);
+}
+.cdd-menu li{
+  padding:10px 12px;
+  border-radius:8px;
+  font-size:13.5px;font-weight:600;
+  color:#f5f5f7;
+  cursor:pointer;
+  display:flex;align-items:center;gap:10px;
+  user-select:none;
+  transition:background .15s ease, color .15s ease;
+}
+[data-theme="light"] .cdd-menu li{color:#1d1d1f}
+.cdd-menu li:hover,
+.cdd-menu li.cdd-hover{
+  background:rgba(230,0,0,.18);
+  color:#fff;
+}
+[data-theme="light"] .cdd-menu li:hover,
+[data-theme="light"] .cdd-menu li.cdd-hover{
+  background:rgba(230,0,0,.12);
+  color:var(--red);
+}
+.cdd-menu li.cdd-selected{
+  background:rgba(230,0,0,.28);
+  color:#fff;
+}
+[data-theme="light"] .cdd-menu li.cdd-selected{
+  background:rgba(230,0,0,.10);
+  color:var(--red);
+}
+/* Logo de la boutique — aligné à GAUCHE du nom (Section 3.4) */
+.cdd-menu li .cdd-logo{
+  width:26px;height:26px;border-radius:7px;
+  background:transparent;       /* SECTION 1 — plus de fond blanc forcé */
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;overflow:hidden;
+}
+.cdd-menu li .cdd-logo img{width:100%;height:100%;object-fit:contain;object-position:center;padding:0}
+[data-theme="dark"] .cdd-menu li .cdd-logo{background:rgba(255,255,255,.05)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 6 — DASHBOARD
+   ═══════════════════════════════════════════════════════════════════ */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px 24px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
+.kpi-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--red),transparent);opacity:0}
+.kpi-card:hover::before{opacity:1}
+.kpi-icon{width:38px;height:38px;border-radius:12px;background:var(--red-soft);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.kpi-icon svg{width:18px;height:18px;fill:none;stroke:var(--red);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.kpi-label{font-size:11px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px}
+.kpi-value{font-size:28px;font-weight:800;letter-spacing:-.8px;line-height:1.1}
+.kpi-value.red{color:var(--red)}
+.kpi-sub{font-size:12px;color:var(--text-2);font-weight:500;margin-top:4px}
+
+/* Ligne 2 : graphiques côte à côte */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.chart-card{padding:22px;display:flex;flex-direction:column}
+.chart-wrap{position:relative;height:280px;width:100%;flex:1}
+
+/* Ligne 3 : Top Performer + Export — 50/50 strict */
+.bottom-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch}
+.bottom-row > .card{display:flex;flex-direction:column;min-height:220px}
+.bottom-row .card-content{flex:1;display:flex;flex-direction:column;justify-content:center}
+
+/* SECTION 6.1 — Top performer : aspect épuré quand vide */
+.top-perf-empty{
+  text-align:center;padding:24px 16px;
+  color:var(--text-2);
+  font-size:14px;font-weight:600;letter-spacing:-.2px;
+  background:var(--card-2);
+  border-radius:var(--r-md);
+}
+.top-perf-empty .tpe-title{
+  font-size:13px;font-weight:700;color:var(--text-2);
+  text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;
+}
+.top-perf-empty .tpe-sub{
+  font-size:13px;color:var(--text-3);font-weight:500;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SEARCH
+   ═══════════════════════════════════════════════════════════════════ */
+.spotlight-wrap{max-width:680px;margin:20px auto 28px;position:relative}
+.spotlight{width:100%;padding:18px 22px 18px 56px;background:var(--card);border:1.5px solid var(--border);border-radius:50px;font-size:16px;font-weight:500;box-shadow:var(--shadow-md)}
+.spotlight:focus{border-color:var(--red);box-shadow:0 0 0 4px var(--red-soft),var(--shadow-md)}
+.spotlight-icon{position:absolute;left:22px;top:50%;transform:translateY(-50%);pointer-events:none}
+.spotlight-icon svg{width:20px;height:20px;fill:none;stroke:var(--text-2);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.search-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:18px;cursor:pointer;box-shadow:var(--shadow-sm)}
+.result-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:var(--red-soft)}
+.rc-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.rc-name{font-size:14px;font-weight:800;letter-spacing:-.2px}
+.rc-name small{display:block;font-size:11px;font-weight:500;color:var(--text-2);margin-top:2px}
+.rc-amt{margin-left:auto;font-size:14px;font-weight:800;color:var(--red)}
+.rc-meta{font-size:12px;color:var(--text-2);line-height:1.55}
+.rc-meta strong{color:var(--text);font-weight:700}
+.empty-state{text-align:center;padding:48px 20px;color:var(--text-2);font-size:14px}
+.empty-state svg{width:42px;height:42px;fill:none;stroke:var(--text-3);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;margin:0 auto 14px;display:block}
+
+/* ═══════════════════════════════════════════════════════════════════
+   LOGOS UNIVERSELS — 50x50 zoomé
+   ═══════════════════════════════════════════════════════════════════ */
+.shop-logo{
+  width:50px;height:50px;border-radius:12px;
+  /* SECTION 1 — fond transparent (plus de fond blanc forcé qui rognait les PNG) */
+  background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  /* Plus de box-shadow blanche : juste un liseré léger pour ancrer le logo
+     sans créer de cadre visible autour des PNG transparents */
+  overflow:hidden;flex-shrink:0;
+  font-weight:900;color:var(--text);font-size:14px;letter-spacing:.3px;
+}
+/* SECTION 1 — image plein cadre, AUCUN padding interne, centrée */
+.shop-logo img{
+  width:100%;height:100%;
+  object-fit:contain;
+  object-position:center;
+  padding:0;
+  display:block;
+}
+.shop-logo.fallback{background:linear-gradient(135deg,#3a3a3c,#1c1c1e);color:#fff}
+.shop-logo.fallback-red{background:linear-gradient(135deg,var(--red),var(--red-dark));color:#fff;box-shadow:0 2px 8px var(--red-glow),0 0 0 1px rgba(0,0,0,.05)}
+/* AUDIT LOGOS — fallback auto-colorisé (couleur déterministe par boutique).
+   Le background inline est posé par window.__logoFallback ; on règle ici
+   uniquement la typographie pour rester lisible sur n'importe quelle teinte. */
+.shop-logo.fallback-auto{
+  color:#fff !important;
+  text-shadow:0 1px 2px rgba(0,0,0,.25);
+  box-shadow:0 2px 8px rgba(0,0,0,.18),0 0 0 1px rgba(255,255,255,.06);
+}
+.shop-logo.fallback-auto span{font-weight:900;letter-spacing:.5px}
+/* SECTION 1 — Garde-fou DARK MODE : un voile très léger derrière le logo
+   pour que les PNG blancs (Adidas, Nike, etc.) restent visibles sur fond noir.
+   Reste transparent en LIGHT MODE comme demandé. Ne s'applique pas aux fallbacks. */
+[data-theme="dark"] .shop-logo:not(.fallback):not(.fallback-red):not(.fallback-auto){
+  background:rgba(255,255,255,.04);
+}
+.shop-logo.sm{width:38px;height:38px;border-radius:10px;font-size:12px}
+.shop-logo.sm img{padding:0}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 5/7 — DOSSIERS — RECONSTRUCTION INTÉGRALE (CSS Grid + Flexbox)
+   PHASE 1 → 5 — Architecture chirurgicale
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* PHASE 1.5 — Toolbar : recherche + tri en custom dropdowns */
+.dossiers-toolbar{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:18px;flex-wrap:wrap;
+}
+.dossiers-toolbar .search-wrap{
+  flex:1 1 280px;position:relative;min-width:220px;
+}
+.dossiers-toolbar .search-wrap svg{
+  position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  width:16px;height:16px;fill:none;stroke:var(--text-3);stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;pointer-events:none;
+}
+.dossiers-toolbar .search-wrap input{
+  width:100%;padding:12px 16px 12px 44px;
+  background:var(--card-2);
+  border:1.5px solid var(--border);
+  border-radius:14px;
+  font-size:14px;font-weight:500;color:var(--text);
+  transition:border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.dossiers-toolbar .search-wrap input:focus{
+  border-color:var(--red);
+  box-shadow:0 0 0 4px var(--red-soft);
+  background:var(--card);
+}
+.dossiers-toolbar .cdd{flex:0 0 220px;min-width:200px}
+.dossiers-toolbar .btn{flex:0 0 auto}
+
+.dossier-list{display:flex;flex-direction:column;gap:8px}
+
+/* ═════ PHASE 1.2/1.3 — DOSSIER FERMÉ : barre ULTRA COMPACTE et FINE ═════
+   Grille 6 colonnes fixes : Logo · Réf · N°Suivi · Client · Statut · Chevron
+*/
+.dossier{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow:var(--shadow-sm);
+  overflow:hidden;
+  transition:box-shadow .25s var(--ease), border-color .25s ease;
+}
+.dossier:hover{box-shadow:var(--shadow-md)}
+.dossier.urgent{border-color:rgba(230,0,0,.28);box-shadow:0 0 0 1px var(--red-soft),var(--shadow-sm)}
+.dossier.archived{opacity:.85;border-style:dashed}
+
+.dossier-head{
+  display:grid;
+  /* ═══════ FIX BUG CRITIQUE — GRILLE BLINDÉE ═══════
+     Colonnes de tailles STRICTEMENT FIXES pour les éléments
+     qui ne doivent JAMAIS bouger (logo, statut, chevron).
+     Les zones texte (réf, suivi, client) prennent le reste en `1fr`
+     avec minmax(0, …) pour autoriser le rétrécissement -> ellipsis.
+     [Logo 50px] · [Réf 1fr] · [Suivi 1fr] · [Client 1fr] · [Statut 120px] · [Chev 40px]
+     Aucun élément ne peut désormais pousser son voisin. */
+  grid-template-columns: 50px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 120px 40px;
+  align-items:center;
+  gap:14px;
+  padding:8px 14px;
+  cursor:pointer;
+  user-select:none;
+  min-height:52px;
+  box-sizing:border-box;
+  width:100%;
+}
+/* ═══════ FIX BUG — CONTENEUR LOGO VERROUILLÉ ═══════
+   Taille STRICTEMENT FIXE — non négociable, peu importe l'image dedans.
+   Tout ce qui rentre dans cette boîte est contraint à 100%/100% via object-fit.
+   Le logo Amazon, FNAC, Leroy Merlin… tout est ENFERMÉ dans 45×45. */
+.dossier-head .shop-logo{
+  width:45px !important;
+  height:45px !important;
+  min-width:45px;max-width:45px;
+  min-height:45px;max-height:45px;
+  border-radius:10px;
+  font-size:11px;
+  flex:0 0 45px;        /* impossible de grandir ou rétrécir */
+  box-sizing:border-box;
+  overflow:hidden;       /* tout débordement est CLIPPÉ */
+  display:flex;align-items:center;justify-content:center;
+}
+.dossier-head .shop-logo img{
+  width:100%;
+  height:100%;
+  object-fit:contain;    /* image enfermée dans la boîte */
+  object-position:center; /* SECTION 1 — centrage explicite */
+  padding:0;             /* SECTION 1 — plus aucun padding interne */
+  box-sizing:border-box;
+  display:block;
+}
+
+/* FIX BUG ALIGNEMENT — Cellules de la grille
+   Le `display:block` (et non flex) garantit que white-space/overflow/text-overflow
+   s'appliquent CORRECTEMENT au contenu direct.
+   `min-width:0` débloque le rétrécissement dans la grille. */
+.dh-cell{
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+  display:block;
+  line-height:1.2;
+}
+/* Cellule logo : exception, doit rester centrée en flex
+   ET verrouillée à la largeur de sa colonne (50px) */
+.dh-cell.dh-cell-logo{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  width:50px;
+  min-width:50px;
+  max-width:50px;
+  overflow:visible;      /* le logo de 45 dépasse pas, mais on évite le clip si jamais */
+}
+
+/* FIX BUG — Application STRICTE des 3 règles d'ellipsis sur CHAQUE bloc texte */
+.dh-ref,
+.dh-suivi,
+.dh-client{
+  display:block;
+  width:100%;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  min-width:0;
+}
+.dh-ref{
+  font-size:11px;font-weight:800;
+  color:var(--red);
+  text-transform:uppercase;letter-spacing:1px;
+  font-family:'JetBrains Mono',monospace;
+}
+.dh-suivi{
+  font-size:12.5px;font-weight:700;
+  color:var(--text);
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:-.2px;
+}
+.dh-suivi.empty{color:var(--text-3);font-weight:500;font-style:italic;font-family:inherit}
+.dh-client{
+  font-size:13px;font-weight:600;
+  color:var(--text);letter-spacing:-.15px;
+}
+.dh-client.empty{color:var(--text-3);font-weight:500;font-style:italic}
+
+/* Cellule client : doit pouvoir contenir le span ellipsisé + un mini-badge optionnel SANS pousser */
+.dh-cell-client{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+}
+.dh-cell-client .dh-client{flex:1 1 auto;min-width:0}
+.dh-cell-client .mini-badge{flex:0 0 auto}
+
+/* PHASE 5.2 — Statut : dot + label ellipsisé. Verrouillé dans la colonne 120px de la grille */
+.dh-status{
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;font-weight:700;letter-spacing:-.1px;
+  color:var(--text-2);
+  min-width:0;
+  max-width:100%;        /* ne dépasse jamais la colonne */
+  overflow:hidden;
+}
+.dh-status .status-label{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  min-width:0;
+}
+.dh-status .status-dot{
+  width:10px;height:10px;border-radius:50%;
+  flex-shrink:0;
+  box-shadow:0 0 0 3px transparent;
+  transition:box-shadow .25s ease;
+}
+.dh-status[data-color="0"] .status-dot{background:#8e8e93;box-shadow:0 0 0 3px rgba(142,142,147,.18)}
+.dh-status[data-color="1"] .status-dot{background:#FF9500;box-shadow:0 0 0 3px rgba(255,149,0,.20)}
+.dh-status[data-color="2"] .status-dot{background:#FFCC00;box-shadow:0 0 0 3px rgba(255,204,0,.22)}
+.dh-status[data-color="3"] .status-dot{background:#7ED957;box-shadow:0 0 0 3px rgba(126,217,87,.22)}
+.dh-status[data-color="4"] .status-dot{background:#2E8B2E;box-shadow:0 0 0 3px rgba(46,139,46,.22)}
+.dh-status[data-color="0"] .status-label{color:var(--text-2)}
+.dh-status[data-color="1"] .status-label{color:#FF9500}
+.dh-status[data-color="2"] .status-label{color:#b8860b}
+.dh-status[data-color="3"] .status-label{color:#3a8d2f}
+.dh-status[data-color="4"] .status-label{color:#2E8B2E}
+[data-theme="dark"] .dh-status[data-color="2"] .status-label{color:#FFCC00}
+[data-theme="dark"] .dh-status[data-color="3"] .status-label{color:#7ED957}
+[data-theme="dark"] .dh-status[data-color="4"] .status-label{color:#7ED957}
+
+/* PHASE 1.4 — Chevron tout à fait à droite, rotation 180° à l'ouverture */
+.dh-chev{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--card-2);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  transition:background .25s var(--ease);
+}
+.dh-chev svg{
+  width:12px;height:12px;fill:none;stroke:var(--text-2);
+  stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;
+  transition:transform .35s var(--ease), stroke .25s ease;
+  display:block;
+}
+.dossier.open .dh-chev{background:var(--red)}
+.dossier.open .dh-chev svg{stroke:#fff;transform:rotate(180deg)}
+
+/* Badge urgent / VIP / Perso (mini, dans la barre) */
+.dh-cell .mini-badge{
+  display:inline-flex;align-items:center;
+  font-size:8.5px;font-weight:800;
+  padding:2px 6px;border-radius:50px;
+  text-transform:uppercase;letter-spacing:.6px;
+  margin-left:8px;flex-shrink:0;
+}
+.mini-badge.vip{background:var(--gold-soft);color:var(--gold)}
+.mini-badge.hot{background:var(--red-soft);color:var(--red)}
+.mini-badge.safe{background:var(--green-soft);color:var(--green)}
+.mini-badge.perso{background:var(--blue);color:#fff;opacity:.85}
+
+/* ═════ ACCORDÉON FLUIDE ═════ */
+.dossier-body{
+  max-height:0;
+  overflow:hidden;
+  padding:0 22px;
+  border-top:1px solid transparent;
+  background:var(--card-2);
+  opacity:0;
+  transition:max-height .55s var(--ease), opacity .35s ease, padding .3s ease, border-color .3s ease;
+}
+.dossier.open .dossier-body{
+  max-height:3000px;
+  padding:20px 22px 22px;
+  border-top-color:var(--border);
+  opacity:1;
+}
+.db-block{margin-top:18px}
+.db-block:first-child{margin-top:0}
+
+/* ═════ PHASE 3.1 — Bloc supérieur : Type + Dernière Relance côte à côte 50/50 ═════ */
+.top-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  align-items:end;
+}
+.top-row .field-cell{
+  display:flex;flex-direction:column;min-width:0;
+}
+
+/* Type Pro/Perso : segmented control plein width */
+.type-segmented{
+  display:flex;
+  background:var(--gray-soft);
+  border-radius:12px;padding:3px;
+  box-shadow:inset 0 0 0 1px var(--border);
+  height:44px;
+}
+.type-segmented button{
+  flex:1;
+  padding:0 16px;font-size:11px;font-weight:700;
+  color:var(--text-2);border-radius:9px;
+  letter-spacing:.4px;text-transform:uppercase;
+  background:transparent;border:none;cursor:pointer;
+  font-family:inherit;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:background .2s ease, color .2s ease, box-shadow .2s ease;
+}
+.type-segmented button:hover{color:var(--text)}
+.type-segmented button.active{
+  background:var(--card);color:var(--text);
+  box-shadow:0 1px 3px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04);
+}
+[data-theme="dark"] .type-segmented button.active{background:#2a2a2a;color:#fff}
+.type-segmented button.active[data-type="Personnel"]{
+  box-shadow:inset 0 -2px 0 var(--blue),0 1px 3px rgba(0,0,0,.12);
+  color:var(--blue);
+}
+.type-segmented button.active[data-type="Pro"]{
+  box-shadow:inset 0 -2px 0 var(--red),0 1px 3px rgba(0,0,0,.12);
+  color:var(--red);
+}
+
+/* ═════ PHASE 5.2 — STEPPER avec petits ronds de couleur ═════ */
+.stepper{
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  padding:18px 8px 8px;
+  margin-top:4px;
+}
+.stepper::before{
+  content:'';position:absolute;
+  top:30px;left:10%;right:10%;height:3px;
+  background:var(--border-strong);
+  border-radius:3px;z-index:0;
+}
+.stepper-progress{
+  position:absolute;top:30px;left:10%;height:3px;
+  border-radius:3px;z-index:1;
+  transition:width .45s var(--ease), background .3s ease;
+  /* ─────────────────────────────────────────────────────────────
+     FIX BARRE DE PROGRESSION — Onglet "RELANCES & DOSSIERS"
+     La barre va de left:10% à right:10% (zone utile = 80% du
+     stepper). On clampe sa largeur à 80% MAX pour qu'elle
+     s'arrête PILE sur le dernier rond ("Commission Payée") et
+     ne dépasse jamais à droite, quel que soit le stage.
+     ───────────────────────────────────────────────────────────── */
+  max-width:80% !important;
+}
+/* Double sécurité : aucun trait ne doit dépasser le dernier point */
+.stepper .step-item:last-child::after,
+.stepper .step-item:last-child::before{
+  display:none !important;
+  width:0 !important;
+  content:none !important;
+}
+.step-item{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  cursor:pointer;
+  user-select:none;
+  font-family:inherit;background:transparent;border:none;color:inherit;padding:0;
+}
+.step-dot{
+  width:24px;height:24px;border-radius:50%;
+  background:var(--card);
+  border:3px solid var(--border-strong);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .3s var(--ease);
+  position:relative;
+  flex-shrink:0;
+}
+.step-dot::after{
+  content:'';width:8px;height:8px;border-radius:50%;
+  background:transparent;transition:background .3s ease;
+}
+.step-item:hover .step-dot{transform:scale(1.08)}
+.step-label{
+  font-size:11px;font-weight:700;
+  color:var(--text-2);
+  text-align:center;line-height:1.2;
+  letter-spacing:-.1px;
+  max-width:90px;
+  transition:color .3s ease;
+}
+.step-item.completed[data-color="0"] .step-dot,
+.step-item.active[data-color="0"] .step-dot{background:#8e8e93;border-color:#8e8e93}
+.step-item.completed[data-color="1"] .step-dot,
+.step-item.active[data-color="1"] .step-dot{background:#FF9500;border-color:#FF9500;box-shadow:0 0 0 4px rgba(255,149,0,.18)}
+.step-item.completed[data-color="2"] .step-dot,
+.step-item.active[data-color="2"] .step-dot{background:#FFCC00;border-color:#FFCC00;box-shadow:0 0 0 4px rgba(255,204,0,.20)}
+.step-item.completed[data-color="3"] .step-dot,
+.step-item.active[data-color="3"] .step-dot{background:#7ED957;border-color:#7ED957;box-shadow:0 0 0 4px rgba(126,217,87,.22)}
+.step-item.completed[data-color="4"] .step-dot,
+.step-item.active[data-color="4"] .step-dot{background:#2E8B2E;border-color:#2E8B2E;box-shadow:0 0 0 4px rgba(46,139,46,.22)}
+.step-item.active .step-dot::after{background:#fff}
+.step-item.active .step-label{color:var(--text);font-weight:800}
+.step-item.active[data-color="1"] .step-label{color:#FF9500}
+.step-item.active[data-color="2"] .step-label{color:#b8860b}
+.step-item.active[data-color="3"] .step-label{color:#3a8d2f}
+.step-item.active[data-color="4"] .step-label{color:#2E8B2E}
+[data-theme="dark"] .step-item.active[data-color="2"] .step-label{color:#FFCC00}
+[data-theme="dark"] .step-item.active[data-color="3"] .step-label{color:#7ED957}
+[data-theme="dark"] .step-item.active[data-color="4"] .step-label{color:#7ED957}
+
+/* Méta sous le stepper : badge frais */
+.fee-line-inline{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.fee-badge{
+  display:inline-flex;align-items:center;
+  padding:6px 12px;
+  background:var(--red-soft);color:var(--red);
+  border:1px solid rgba(230,0,0,.18);
+  border-radius:50px;
+  font-size:11px;font-weight:800;letter-spacing:.2px;
+}
+.fee-badge.ok{background:var(--green-soft);color:var(--green);border-color:rgba(52,199,89,.25)}
+.fee-badge.perso{background:var(--gray-soft);color:var(--text-2);border-color:var(--border)}
+
+/* ═════ PHASE 2.1 — GRILLE STRICTE 2 LIGNES × 5 COLONNES (10 champs) ═════
+   FIX BUG REDIMENSIONNEMENT — Verrouillage absolu des champs.
+   - Le conteneur impose 5 colonnes égales et FIXES (minmax(0,1fr) empêche le débordement).
+   - Tous les enfants : width:100% + box-sizing:border-box + height:45px strict.
+*/
+.fields-grid-strict{
+  display:grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-auto-rows:auto;
+  gap:14px;
+  align-items:start;
+  width:100%;
+  box-sizing:border-box;
+}
+.fields-grid-strict .field-row{
+  display:flex;
+  flex-direction:column;
+  min-width:0;       /* CRUCIAL — autorise le rétrécissement, empêche le débordement */
+  width:100%;
+  box-sizing:border-box;
+}
+/* FIX BUG — Hauteur FIXE STRICTE, largeur 100%, box-sizing border-box pour TOUS les champs */
+.fields-grid-strict .field-row .field-input,
+.fields-grid-strict .field-row .cdd-trigger,
+.fields-grid-strict .field-row .cdd{
+  height:45px !important;
+  width:100% !important;
+  max-width:100%;
+  min-width:0;
+  box-sizing:border-box !important;
+  margin:0;
+}
+/* FIX BUG — Empêche tout input/textarea de déborder ou de se redimensionner selon contenu */
+.fields-grid-strict .field-row input,
+.fields-grid-strict .field-row textarea,
+.fields-grid-strict .field-row select{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  box-sizing:border-box;
+}
+/* Le texte interne d'un input ne doit jamais le faire grossir */
+.fields-grid-strict .field-row .field-input{
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  overflow:hidden;
+}
+.field-label{
+  display:block;
+  font-size:10px;font-weight:800;
+  color:var(--text-2);
+  text-transform:uppercase;letter-spacing:1px;
+  margin-bottom:6px;padding-left:2px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* ═════ PHASE 2.3 — Bloc 50/50 : Articles | Notes (rows=2 max par défaut) ═════ */
+.split-block{
+  display:flex;
+  gap:18px;
+  align-items:stretch;
+}
+.split-block > div{
+  flex:1 1 50%;
+  min-width:0;
+  display:flex;flex-direction:column;
+}
+.field-textarea-2{
+  width:100%;
+  padding:12px 16px;
+  background:var(--card-2);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  font-size:14px;font-weight:500;
+  font-family:inherit;
+  resize:none;
+  line-height:1.5;
+  /* PHASE 2.3 — exactement 2 lignes par défaut */
+  min-height:64px;
+  height:64px;
+  max-height:140px;
+  overflow-y:auto;
+  transition:border-color .2s ease, box-shadow .2s ease, height .2s ease;
+}
+.field-textarea-2:focus{
+  border-color:var(--red);
+  box-shadow:0 0 0 4px var(--red-soft);
+  background:var(--card);
+  height:140px;
+}
+.field-textarea-2::-webkit-scrollbar{width:6px}
+.field-textarea-2::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:6px;border:none}
+
+/* Subsection title rouge */
+.subsection-title{
+  font-size:12px;font-weight:800;color:var(--red);
+  text-transform:uppercase;letter-spacing:1.2px;
+  margin-bottom:10px;padding-left:2px;
+  display:flex;align-items:center;gap:8px;
+}
+.subsection-title::before{
+  content:'';width:14px;height:2px;
+  background:var(--red);border-radius:2px;
+}
+
+/* ═════ PHASE 4.1 — 4 BOUTONS FOOTER : largeur strictement équivalente ═════ */
+.actions-footer{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);    /* PHASE 4.1 — 4 colonnes égales */
+  gap:12px;
+  margin-top:22px;
+}
+.actions-footer.archived-mode{
+  grid-template-columns:repeat(3,1fr);
+}
+/* SECTION 2.1 — Bouton supprimer définitivement (rouge sombre, intense) */
+.actions-footer .btn-delete{
+  background:#8b0000;
+  box-shadow:0 0 18px rgba(139,0,0,.55), 0 4px 14px rgba(139,0,0,.30);
+}
+.actions-footer .btn-delete:hover{
+  background:#a00000;
+  box-shadow:0 0 26px rgba(160,0,0,.75), 0 6px 18px rgba(160,0,0,.45);
+  transform:translateY(-1px);
+}
+.actions-footer .btn{
+  width:100%;
+  color:#ffffff !important;
+  padding:13px 12px;
+  font-size:12.5px;
+  letter-spacing:.4px;
+  white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;
+  border-radius:12px;
+  border:none;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-weight:700;text-transform:uppercase;
+  font-family:inherit;cursor:pointer;
+  transition:transform .15s ease, box-shadow .25s ease, background .2s ease;
+}
+.actions-footer .btn svg{stroke:#fff;width:14px;height:14px;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+
+.actions-footer .btn-save{
+  background:var(--red);
+  box-shadow:0 0 18px rgba(230,0,0,.45), 0 4px 14px var(--red-glow);
+}
+.actions-footer .btn-save:hover{
+  box-shadow:0 0 26px rgba(230,0,0,.65), 0 6px 18px var(--red-glow);
+  transform:translateY(-1px);
+}
+.actions-footer .btn-tg{
+  background:#229ED9;
+  box-shadow:0 0 18px rgba(34,158,217,.45), 0 4px 14px rgba(34,158,217,.30);
+}
+.actions-footer .btn-tg:hover{
+  box-shadow:0 0 26px rgba(34,158,217,.65), 0 6px 18px rgba(34,158,217,.40);
+  transform:translateY(-1px);
+}
+.actions-footer .btn-copy{
+  background:#5e5e62;
+  box-shadow:0 0 18px rgba(94,94,98,.45), 0 4px 14px rgba(94,94,98,.30);
+}
+.actions-footer .btn-copy:hover{
+  background:#6e6e73;
+  box-shadow:0 0 26px rgba(110,110,115,.65), 0 6px 18px rgba(110,110,115,.40);
+  transform:translateY(-1px);
+}
+.actions-footer .btn-archive{
+  background:#1d1d1f;
+  box-shadow:0 0 18px rgba(29,29,31,.55), 0 4px 14px rgba(0,0,0,.30);
+}
+[data-theme="light"] .actions-footer .btn-archive{background:#1d1d1f}
+.actions-footer .btn-archive:hover{
+  box-shadow:0 0 26px rgba(255,69,58,.55), 0 6px 18px rgba(255,69,58,.30);
+  transform:translateY(-1px);
+}
+.actions-footer .btn-restore{
+  background:var(--green);
+  box-shadow:0 0 18px rgba(52,199,89,.45), 0 4px 14px rgba(52,199,89,.30);
+}
+.actions-footer .btn-restore:hover{
+  box-shadow:0 0 26px rgba(52,199,89,.65), 0 6px 18px rgba(52,199,89,.40);
+  transform:translateY(-1px);
+}
+
+.dirty-indicator{
+  display:none;margin-top:14px;padding:10px 14px;
+  background:var(--orange-soft);color:var(--orange);
+  border:1px solid rgba(255,149,0,.25);border-radius:var(--r-sm);
+  font-size:12px;font-weight:700;text-align:center;letter-spacing:-.1px;
+  animation:dirtyPulse 1.5s ease infinite;
+}
+.dossier.dirty .dirty-indicator{display:block}
+.dossier.dirty .btn-save{box-shadow:0 4px 14px var(--red-glow),0 0 0 3px var(--red-soft)}
+@keyframes dirtyPulse{0%,100%{opacity:1}50%{opacity:.65}}
+
+/* Responsive — la grille fixe se simplifie, mais TOUTES les colonnes restent en minmax(0,...) pour bloquer le débordement */
+@media(max-width:1280px){
+  .fields-grid-strict{grid-template-columns: repeat(3, minmax(0, 1fr))}
+  /* Garde la grille blindée : Logo 50 / Réf / Suivi / Client / Statut 110 / Chev 40 */
+  .dossier-head{grid-template-columns: 50px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 110px 40px;gap:12px}
+}
+@media(max-width:1100px){
+  .fields-grid-strict{grid-template-columns: repeat(2, minmax(0, 1fr))}
+  /* Cache la cellule suivi pour conserver l'alignement strict des autres */
+  .dossier-head{grid-template-columns: 50px minmax(0,1fr) minmax(0,1fr) 110px 40px;gap:10px}
+  .dossier-head .dh-suivi-cell{display:none}
+}
+@media(max-width:920px){
+  .fields-grid-strict{grid-template-columns: repeat(2, minmax(0, 1fr))}
+  .split-block{flex-direction:column}
+  .top-row{grid-template-columns:1fr}
+  .actions-footer{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 8 — KNOWLEDGE BASE (cartes premium animées)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ═════ SECTION 3 — TOOLBAR KB (recherche + pilules + filtres) ═════ */
+.kb-toolbar{
+  display:flex;flex-direction:column;gap:14px;
+  margin-bottom:22px;
+}
+.kb-search-row{
+  display:flex;align-items:stretch;gap:12px;width:100%;
+}
+.kb-search-wrap{
+  position:relative;flex:1;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:var(--shadow-sm);
+  display:flex;align-items:center;
+  transition:border-color .25s ease, box-shadow .25s ease;
+}
+.kb-search-wrap:focus-within{
+  border-color:rgba(230,0,0,.45);
+  box-shadow:0 0 0 3px rgba(230,0,0,.10), var(--shadow-sm);
+}
+.kb-search-ic{
+  width:18px;height:18px;flex-shrink:0;
+  margin:0 12px 0 16px;
+  stroke:var(--text-2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+}
+#kbSearch{
+  flex:1;border:none;background:transparent;
+  padding:14px 8px;font-size:14.5px;font-weight:500;
+  color:var(--text);outline:none;font-family:inherit;
+  min-width:0;
+}
+#kbSearch::placeholder{color:var(--text-3);font-weight:500}
+.kb-search-clear{
+  width:32px;height:32px;flex-shrink:0;margin-right:8px;
+  display:none;align-items:center;justify-content:center;
+  background:var(--gray-soft);border-radius:50%;
+  cursor:pointer;border:none;color:var(--text-2);
+  transition:background .2s ease, color .2s ease;
+}
+.kb-search-clear:hover{background:var(--red-soft);color:var(--red)}
+.kb-search-clear svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round}
+.kb-search-wrap.has-value .kb-search-clear{display:inline-flex}
+
+.kb-filters-wrap{position:relative;flex-shrink:0}
+.kb-filters-btn{
+  height:100%;
+  padding:0 18px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  display:inline-flex;align-items:center;gap:9px;
+  font-size:14px;font-weight:700;color:var(--text);
+  cursor:pointer;box-shadow:var(--shadow-sm);
+  transition:border-color .25s ease, transform .15s ease, background .2s ease;
+  position:relative;
+}
+.kb-filters-btn:hover{border-color:var(--border-strong);transform:translateY(-1px)}
+.kb-filters-btn svg{
+  width:16px;height:16px;stroke:var(--text);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+}
+.kb-filters-btn.active{
+  background:var(--red);color:#fff;border-color:var(--red);
+  box-shadow:0 0 18px var(--red-glow);
+}
+.kb-filters-btn.active svg{stroke:#fff}
+.kb-filters-dot{
+  position:absolute;top:8px;right:10px;
+  width:8px;height:8px;border-radius:50%;
+  background:var(--red);
+  box-shadow:0 0 0 2px var(--card);
+}
+.kb-filters-btn.active .kb-filters-dot{background:#fff;box-shadow:0 0 0 2px var(--red)}
+
+.kb-filters-pop{
+  position:absolute;top:calc(100% + 10px);right:0;
+  width:340px;max-width:calc(100vw - 40px);
+  background:var(--card);
+  border:1px solid var(--border-strong);
+  border-radius:16px;
+  box-shadow:var(--shadow-lg);
+  padding:18px;
+  z-index:100;
+  display:none;
+  animation:kbFpIn .2s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes kbFpIn{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.kb-filters-pop.show{display:block}
+.kb-fp-title{
+  font-size:11px;font-weight:800;color:var(--text-2);
+  text-transform:uppercase;letter-spacing:1px;
+  margin-bottom:9px;margin-top:4px;
+}
+.kb-fp-pills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
+.kb-fp-pill{
+  padding:7px 13px;
+  background:var(--card-2);
+  border:1px solid var(--border);
+  border-radius:99px;
+  font-size:12.5px;font-weight:700;color:var(--text);
+  cursor:pointer;
+  transition:all .2s ease;
+}
+.kb-fp-pill:hover{border-color:var(--border-strong)}
+.kb-fp-pill.active{background:var(--red);color:#fff;border-color:var(--red);box-shadow:0 0 12px var(--red-glow)}
+.kb-fp-prices{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.kb-fp-prices input{
+  flex:1;min-width:0;
+  padding:10px 12px;
+  background:var(--card-2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  font-size:13.5px;font-weight:600;color:var(--text);
+  font-family:'JetBrains Mono',monospace;
+  outline:none;
+  transition:border-color .2s ease, box-shadow .2s ease;
+}
+.kb-fp-prices input:focus{border-color:rgba(230,0,0,.45);box-shadow:0 0 0 3px rgba(230,0,0,.10)}
+.kb-fp-prices span{color:var(--text-3);font-weight:700}
+.kb-fp-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:6px;border-top:1px solid var(--border);padding-top:14px}
+.kb-fp-reset,.kb-fp-close{
+  padding:9px 16px;border-radius:10px;
+  font-size:12.5px;font-weight:700;cursor:pointer;
+  border:1px solid var(--border);background:var(--card-2);color:var(--text);
+  transition:all .2s ease;
+}
+.kb-fp-reset:hover{border-color:var(--red);color:var(--red)}
+.kb-fp-close{background:var(--red);color:#fff;border-color:var(--red)}
+.kb-fp-close:hover{background:var(--red-dark);box-shadow:0 0 14px var(--red-glow)}
+
+/* Pilules de catégorie (full width, scroll horizontal sur mobile) */
+.kb-cats{
+  display:flex;flex-wrap:wrap;gap:8px;
+  padding:2px 0;
+}
+.kb-cat-pill{
+  padding:8px 16px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:99px;
+  font-size:13px;font-weight:700;color:var(--text);
+  cursor:pointer;
+  box-shadow:var(--shadow-sm);
+  transition:all .25s cubic-bezier(.25,.8,.25,1);
+  white-space:nowrap;
+}
+.kb-cat-pill:hover{border-color:rgba(230,0,0,.45);transform:translateY(-1px)}
+.kb-cat-pill.active{
+  background:var(--red);color:#fff;border-color:var(--red);
+  box-shadow:0 0 14px var(--red-glow), 0 2px 6px rgba(230,0,0,.20);
+}
+
+/* SECTION 3.4 — catégorie affichée sous le nom/délai sur la carte */
+.kb-card-category{
+  display:block;
+  font-size:10px;font-weight:700;
+  color:var(--text-3);
+  text-transform:uppercase;letter-spacing:1.1px;
+  text-align:center;
+  margin-top:5px;
+}
+
+/* SECTION 4.1 — icône lien externe discrète, tout à droite de la ligne nom/délai */
+.kb-ext-link{
+  flex-shrink:0;
+  width:30px;height:30px;
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:8px;
+  color:var(--text-3);
+  cursor:pointer;
+  transition:background .2s ease, color .2s ease, transform .15s ease;
+  background:transparent;border:none;
+  margin-left:8px;
+}
+.kb-ext-link:hover{
+  background:var(--red-soft);
+  color:var(--red);
+  transform:translateY(-1px);
+}
+.kb-ext-link svg{
+  width:15px;height:15px;
+  stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+}
+
+/* SECTION 4.2 — CSS STRICT logos (impose le brief, !important pour gagner sur tout) */
+.kb-card-head .shop-logo{
+  background:transparent !important;
+  padding:0 !important;
+  overflow:visible !important;
+}
+.kb-card-head .shop-logo img{
+  object-fit:contain !important;
+  width:100% !important;
+  height:100% !important;
+  transform:scale(1.15) !important;
+}
+
+@media(max-width:720px){
+  .kb-search-row{flex-direction:column;gap:10px}
+  .kb-filters-wrap{width:100%}
+  .kb-filters-btn{width:100%;justify-content:center;padding:14px}
+  .kb-filters-pop{left:0;right:0;width:auto}
+  .kb-cats{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;margin:-2px;padding:2px}
+  .kb-cats::-webkit-scrollbar{display:none}
+}
+
+.kb-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:22px;
+  align-items:stretch;
+  padding:6px 2px;
+}
+.kb-card{
+  position:relative;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:24px;
+  box-shadow:var(--shadow-sm);
+  display:flex;flex-direction:column;
+  min-height:240px;
+  overflow:hidden;
+  /* SECTION 3 — transition premium Apple/Vercel : courbe de Bézier douce
+     appliquée à toutes les propriétés animables (transform, box-shadow,
+     border-color, background) pour une réaction unifiée et soyeuse. */
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  will-change: transform, box-shadow;
+}
+/* SECTION 8.3 — Lueur rouge + bordure rouge "tournante" au hover */
+.kb-card::before{
+  content:'';
+  position:absolute;
+  inset:-2px;
+  border-radius:calc(var(--r-lg) + 2px);
+  padding:2px;
+  background:conic-gradient(from 0deg,
+    rgba(230,0,0,0) 0%,
+    rgba(230,0,0,.55) 25%,
+    rgba(230,0,0,0) 50%,
+    rgba(230,0,0,.55) 75%,
+    rgba(230,0,0,0) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+          mask-composite:exclude;
+  opacity:0;
+  transition:opacity .4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  pointer-events:none;
+  animation:kbBorderRot 4s linear infinite paused;
+}
+/* SECTION 3 — hover premium : léger lift + scale subtil, bordure éclairée,
+   ombre portée rouge élégante. Les valeurs respectent strictement le brief. */
+.kb-card:hover{
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 8px 24px rgba(255, 0, 0, 0.15);
+  border-color: rgba(230, 0, 0, 0.45);
+}
+.kb-card:hover::before{
+  opacity:1;
+  animation-play-state:running;
+}
+@keyframes kbBorderRot{
+  to{transform:rotate(360deg)}
+}
+/* La rotation s'applique au gradient via background-position rotation */
+.kb-card::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:var(--r-lg);
+  background:radial-gradient(circle at 50% 0%, rgba(230,0,0,.10), transparent 60%);
+  opacity:0;
+  transition:opacity .4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  pointer-events:none;
+}
+.kb-card:hover::after{opacity:1}
+
+.kb-card-head{display:flex;align-items:center;gap:14px;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--border);position:relative;z-index:1}
+.kb-card-head .shop-logo{
+  width:52px;height:52px;border-radius:14px;
+  flex-shrink:0;
+}
+/* SECTION 1 — image plein cadre, AUCUN padding, pas de border-radius:50% qui rognait les PNG */
+.kb-card-head .shop-logo img{padding:0;border-radius:inherit;object-position:center}
+.kb-card-name{font-size:17px;font-weight:800;letter-spacing:-.3px;line-height:1.15;flex:1;min-width:0}
+.kb-card-name small{display:block;font-size:11px;font-weight:600;color:var(--text-2);margin-top:4px;letter-spacing:.2px}
+.kb-card-tiers{flex:1;display:flex;flex-direction:column;gap:10px;position:relative;z-index:1}
+.kb-tier{
+  background:var(--card-2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:13px 15px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  flex-wrap:nowrap;          /* SECTION 1.3 — pas de retour ligne, on reste sur 1 ligne */
+}
+/* SECTION 1.3 — méthode réduite à 0.75rem pour tenir sur 1 ligne sans gonfler la carte */
+.kb-tier-method{font-weight:800;font-size:0.75rem;letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kb-tier-elig{font-size:11px;color:var(--text-2);font-weight:600;margin-top:2px;white-space:nowrap}
+.kb-tier-fee{font-size:0.75rem;font-weight:800;color:var(--red);font-family:'JetBrains Mono',monospace;white-space:nowrap;flex-shrink:0}
+.kb-tier-fee.free{color:var(--green)}
+/* SECTION 1.1 — lien invisible sur le titre : le titre reste visuellement identique
+   mais devient cliquable (le style inline du <a> couvre le cas par défaut, ce bloc
+   sécurise les états hover/focus/visited pour qu'aucun bleu/violet n'apparaisse). */
+.kb-card-name a,
+.kb-card-name a:visited,
+.kb-card-name a:hover,
+.kb-card-name a:focus,
+.kb-card-name a:active{
+  text-decoration:none;
+  color:inherit;
+  cursor:pointer;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TEAM / LOGS
+   ═══════════════════════════════════════════════════════════════════ */
+.team-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:16px}
+.profile-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;text-align:center;box-shadow:var(--shadow-sm)}
+.profile-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--red-dark));display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:30px;font-weight:800;color:#fff;letter-spacing:-1px;box-shadow:0 8px 24px var(--red-glow)}
+.profile-name{font-size:18px;font-weight:800;letter-spacing:-.3px}
+.profile-role{font-size:12px;color:var(--text-2);font-weight:600;margin-top:2px}
+.profile-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;padding-top:20px;border-top:1px solid var(--border)}
+.ps-val{font-size:18px;font-weight:800;color:var(--red);letter-spacing:-.3px;font-family:'JetBrains Mono',monospace}
+.ps-lbl{font-size:10px;color:var(--text-2);text-transform:uppercase;letter-spacing:.8px;font-weight:700;margin-top:2px}
+
+.terminal{background:#0d0d0f;border-radius:var(--r-lg);padding:18px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#7ED957;height:380px;overflow-y:auto;border:1px solid #1f1f23;box-shadow:var(--shadow-sm)}
+[data-theme="dark"] .terminal{background:#000}
+.terminal-head{display:flex;align-items:center;gap:6px;padding-bottom:12px;border-bottom:1px solid #1f1f23;margin-bottom:12px}
+.term-dot{width:10px;height:10px;border-radius:50%}
+.term-dot.r{background:#FF5F57}.term-dot.y{background:#FEBC2E}.term-dot.g{background:#28C840}
+.term-title{margin-left:auto;color:#636366;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.log-line{margin-bottom:4px;line-height:1.5;word-break:break-word;animation:logIn .3s ease}
+.log-time{color:#FEBC2E}
+.log-act{color:#7ED957}
+.log-evt{color:#f5f5f7}
+.log-warn{color:#FF5F57}
+@keyframes logIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TOAST + CONFIRM (SECTION 2.1)
+   ═══════════════════════════════════════════════════════════════════ */
+#toastWrap{position:fixed;top:20px;right:20px;z-index:9000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:12px 18px;font-size:13px;font-weight:700;box-shadow:var(--shadow-lg);animation:toastIn .35s var(--ease);min-width:200px;display:flex;align-items:center;gap:10px;pointer-events:all}
+.toast.ok{border-left:3px solid var(--green)}
+.toast.err{border-left:3px solid var(--red)}
+.toast.info{border-left:3px solid var(--blue)}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+.toast.out{animation:toastOut .3s ease forwards}
+@keyframes toastOut{to{opacity:0;transform:translateX(40px)}}
+
+#confirmOverlay{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px}
+#confirmOverlay.show{display:flex;animation:viewFade .25s ease}
+.confirm-modal{background:var(--card);border-radius:var(--r-xl);padding:32px 28px 26px;max-width:420px;width:100%;text-align:center;box-shadow:var(--shadow-lg)}
+.confirm-icon{width:54px;height:54px;background:var(--red-soft);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.confirm-icon svg{width:24px;height:24px;fill:none;stroke:var(--red);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* SECTION 2.1 — Typographie stricte */
+.confirm-main{
+  font-size:18px;font-weight:700;
+  letter-spacing:-.3px;
+  line-height:1.35;
+  margin-bottom:8px;
+  color:var(--text);
+}
+.confirm-main .ref-strong{
+  font-weight:900;
+  color:var(--text);
+}
+.confirm-sub{
+  display:block;
+  font-size:13.5px;font-weight:500;
+  color:var(--text-2);
+  margin-bottom:22px;
+  letter-spacing:-.1px;
+}
+.confirm-btns{display:flex;gap:10px}
+.confirm-btns .btn{flex:1;justify-content:center}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 4 — FLATPICKR — Thème Apple iOS premium
+   ═══════════════════════════════════════════════════════════════════ */
+.flatpickr-calendar{
+  background:#ffffff !important;
+  border:1px solid rgba(0,0,0,.06) !important;
+  border-radius:18px !important;
+  box-shadow:0 24px 60px rgba(0,0,0,.18), 0 0 0 1px rgba(0,0,0,.04) !important;
+  font-family:'Outfit',-apple-system,BlinkMacSystemFont,sans-serif !important;
+  padding:6px 8px 10px !important;
+  width:auto !important;
+  overflow:hidden;
+}
+.flatpickr-calendar.arrowTop:before,
+.flatpickr-calendar.arrowTop:after,
+.flatpickr-calendar.arrowBottom:before,
+.flatpickr-calendar.arrowBottom:after{display:none !important}
+.flatpickr-months{padding:8px 6px 4px}
+.flatpickr-month{
+  background:transparent !important;
+  color:#1d1d1f !important;
+  height:42px !important;
+  border-radius:12px;
+  overflow:hidden;
+}
+.flatpickr-current-month{
+  font-size:15px !important;
+  font-weight:700 !important;
+  color:#1d1d1f !important;
+  padding-top:6px !important;
+}
+.flatpickr-current-month .flatpickr-monthDropdown-months,
+.flatpickr-current-month input.cur-year{
+  font-weight:700 !important;
+  color:#1d1d1f !important;
+}
+.flatpickr-current-month .flatpickr-monthDropdown-months:hover{
+  background:rgba(230,0,0,.08) !important;
+}
+/* ─────────────────────────────────────────────────────────────
+   FIX CALENDRIER — monthSelectorType:"static"
+   Le mois devient un <span class="cur-month"> non cliquable.
+   On supprime toute bordure, fond, flèche descendante ou
+   apparence d'élément interactif pour qu'il rende comme
+   du texte simple. Navigation uniquement via les flèches < >.
+   ───────────────────────────────────────────────────────────── */
+.flatpickr-current-month .cur-month{
+  font-weight:700 !important;
+  color:#1d1d1f !important;
+  background:transparent !important;
+  border:none !important;
+  outline:none !important;
+  box-shadow:none !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  -moz-appearance:none !important;
+  background-image:none !important;
+  padding:0 4px !important;
+  margin:0 !important;
+  pointer-events:none !important;
+  cursor:default !important;
+}
+.flatpickr-current-month .cur-month::after,
+.flatpickr-current-month .cur-month::before{
+  display:none !important;
+  content:none !important;
+}
+[data-theme="dark"] .flatpickr-current-month .cur-month{
+  color:#1d1d1f !important;
+}
+.flatpickr-prev-month, .flatpickr-next-month{
+  fill:#1d1d1f !important;
+  color:#1d1d1f !important;
+  padding:8px !important;
+  border-radius:50% !important;
+  margin:6px !important;
+  transition:background .2s ease;
+}
+.flatpickr-prev-month:hover, .flatpickr-next-month:hover{
+  background:rgba(0,0,0,.05) !important;
+  fill:var(--red) !important;
+  color:var(--red) !important;
+}
+.flatpickr-prev-month svg, .flatpickr-next-month svg{
+  fill:inherit !important;
+}
+.flatpickr-weekdays{background:transparent !important;height:30px !important}
+.flatpickr-weekday{
+  background:transparent !important;
+  color:#86868b !important;
+  font-weight:700 !important;
+  font-size:11px !important;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+.flatpickr-days{padding:4px 2px 2px}
+.dayContainer{padding:0 !important;width:100% !important;min-width:0 !important;max-width:none !important}
+.flatpickr-day{
+  color:#1d1d1f !important;
+  font-weight:600 !important;
+  font-size:13.5px !important;
+  border-radius:50% !important;
+  height:36px !important;
+  line-height:36px !important;
+  margin:1px 0 !important;
+  border:none !important;
+  background:transparent !important;
+  transition:background .18s ease, color .18s ease, transform .18s ease;
+}
+.flatpickr-day:hover{
+  background:rgba(230,0,0,.10) !important;
+  color:var(--red) !important;
+  border:none !important;
+}
+.flatpickr-day.today{
+  color:var(--red) !important;
+  font-weight:800 !important;
+  background:transparent !important;
+  border:none !important;
+  position:relative;
+}
+.flatpickr-day.today::after{
+  content:'';
+  position:absolute;
+  bottom:5px;left:50%;
+  transform:translateX(-50%);
+  width:4px;height:4px;border-radius:50%;
+  background:var(--red);
+}
+/* SECTION 4.3 — Jour sélectionné = cercle rouge */
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover,
+.flatpickr-day.selected.today{
+  background:var(--red) !important;
+  color:#ffffff !important;
+  border:none !important;
+  box-shadow:0 4px 14px rgba(230,0,0,.35);
+  font-weight:800 !important;
+}
+.flatpickr-day.selected.today::after{display:none}
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay{
+  color:#c7c7cc !important;
+  font-weight:500 !important;
+  opacity:.55;
+}
+.flatpickr-day.flatpickr-disabled:hover{background:transparent !important;color:#c7c7cc !important;cursor:not-allowed}
+
+/* Dark mode compat — fond blanc gardé pour rester "design Apple" mais bordure adaptée */
+[data-theme="dark"] .flatpickr-calendar{
+  background:#fafafc !important;
+  border:1px solid rgba(0,0,0,.10) !important;
+  box-shadow:0 24px 60px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.04) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════ */
+@media(max-width:1100px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:920px){
+  .charts-row{grid-template-columns:1fr}
+  .bottom-row{grid-template-columns:1fr}
+  .team-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .btn-burger-mobile{display:flex}
+  #sidebar{transform:translateX(-100%)}
+  #sidebar.open{transform:translateX(0);box-shadow:0 0 60px rgba(0,0,0,.6)}
+  #main{margin-left:0;padding:20px 18px 60px}
+  .tb-title{font-size:24px}
+  .kpi-value{font-size:24px}
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:10px}
+  /* PHASE 1 — Mobile : barre dossier ultra simplifiée [Logo|Réf|Statut|Chev] avec colonnes FIXES */
+  .dossier-head{grid-template-columns: 42px minmax(0,1fr) 100px 32px;gap:8px;padding:8px 10px}
+  .dossier-head .dh-suivi-cell{display:none}
+  .dossier-head .dh-cell-client{display:none}  /* cache client en mobile */
+  .dossier-head .dh-cell-logo{width:42px;min-width:42px;max-width:42px}
+  /* En mobile, le logo passe à 38px (rentre dans la cellule de 42px) */
+  .dossier-head .shop-logo{
+    width:38px !important;height:38px !important;
+    min-width:38px;max-width:38px;min-height:38px;max-height:38px;
+    flex:0 0 38px;border-radius:9px;
+  }
+  .kb-grid{grid-template-columns:1fr}
+  .top-row{grid-template-columns:1fr}
+  .actions-footer{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body data-theme="light">
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SECTION 1 — LOGIN PURETÉ ABSOLUE
+     ═══════════════════════════════════════════════════════════════════ -->
+<div id="loginScreen">
+  <div class="login-modal">
+    <!-- AUDIT LOGOS — logo de marque (chemin fixe, fallback texte si l'image manque) -->
+    <div class="lf-logo-box">
+      <img src="logos/logoprincipal.png" alt="Cocaïne and refund — Logo officiel"
+           id="lfLogoImg"
+           onerror="this.style.display='none';document.getElementById('lfLogoFb').style.display='block'">
+      <span class="lf-logo-fb" id="lfLogoFb">Cocaïne · and refund</span>
+    </div>
+    <h1>Connexion sécurisée</h1>
+    <div class="lf-group">
+      <label>Identifiant</label>
+      <input type="text" class="lf-input" id="loginUser" placeholder="Identifiant" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+    </div>
+    <div class="lf-group">
+      <label>Mot de passe</label>
+      <input type="password" class="lf-input" id="loginPass" placeholder="••••••••••" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+    </div>
+    <button class="lf-btn" id="loginBtn">Se connecter</button>
+    <div class="lf-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     APP SHELL
+     ═══════════════════════════════════════════════════════════════════ -->
+<div id="app">
+  <aside id="sidebar">
+    <div class="sb-head">
+      <!-- AUDIT LOGOS — chemin fixe normalisé : logos/logoprincipal.png
+           object-fit:contain est appliqué via #sbLogoBox img (CSS ligne ~140) -->
+      <div id="sbLogoBox">
+        <img src="logos/logoprincipal.png"
+             alt="Cocaïne and refund — Logo officiel"
+             id="sbLogoImg"
+             onerror="this.style.display='none';document.getElementById('sbLogoFb').style.display='flex'">
+        <div class="sb-logo-fallback" id="sbLogoFb">Cocaïne<br>and refund</div>
+      </div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-nav-item active" data-view="dashboard">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        Tableau de bord
+      </div>
+      <div class="sb-nav-item" data-view="search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Recherche Globale
+      </div>
+      <div class="sb-nav-item" data-view="dossiers">
+        <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+        Relances & Dossiers
+        <span class="sb-badge" id="navBadgeRelance" style="display:none">0</span>
+      </div>
+      <div class="sb-nav-item" data-view="kb">
+        <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+        Base de Connaissances
+      </div>
+      <div class="sb-nav-item" data-view="archives">
+        <svg viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+        Archives
+        <span class="sb-badge" id="navBadgeArchive" style="display:none;background:var(--text-2)">0</span>
+      </div>
+      <div class="sb-nav-item" data-view="team">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Équipe
+      </div>
+    </nav>
+    <div class="sb-foot">
+      <button class="sb-theme" id="themeToggle">
+        <svg id="themeIcon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <span id="themeLabel">Sombre</span>
+      </button>
+      <button class="sb-logout" id="sbLogout">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Quitter
+      </button>
+    </div>
+  </aside>
+
+  <main id="main">
+    <div id="topbar">
+      <button class="btn-burger-mobile" id="burgerMobile" aria-label="Menu"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <div class="tb-title" id="tbTitle">Tableau de bord<small id="tbSub">Vue d'ensemble — Cocaïne and refund®</small></div>
+      <div class="tb-tools">
+        <div class="tb-session" id="sessionTimer">00:00:00</div>
+      </div>
+    </div>
+
+    <!-- ═════ DASHBOARD ═════ -->
+    <section class="view active" data-view="dashboard">
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M3 6h18l-2 13a2 2 0 01-2 2H7a2 2 0 01-2-2L3 6z"/><path d="M3 6l3-4h12l3 4"/><line x1="9" y1="11" x2="9" y2="17"/><line x1="15" y1="11" x2="15" y2="17"/></svg></div>
+          <div class="kpi-label">Total Commandes</div>
+          <div class="kpi-value" id="kpiTotal">0</div>
+          <div class="kpi-sub" id="kpiTotalSub">dossiers actifs</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+          <div class="kpi-label">CA Global</div>
+          <div class="kpi-value red" id="kpiCA">0,00€</div>
+          <div class="kpi-sub">somme des montants traités</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <div class="kpi-label">Bénéfice Net (40%)</div>
+          <div class="kpi-value red" id="kpiNet">0,00€</div>
+          <div class="kpi-sub">commission théorique (Pro uniquement)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+          <div class="kpi-label">Radar Trésorerie</div>
+          <div class="kpi-value" id="kpiRadar">0,00€</div>
+          <div class="kpi-sub">commissions prévues sous 7j</div>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="card chart-card">
+          <div class="section-title"><svg viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>Bénéfice net par mois</div>
+          <div class="chart-wrap"><canvas id="chartBenefice"></canvas></div>
+        </div>
+        <div class="card chart-card">
+          <div class="section-title"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Montant remboursé par mois</div>
+          <div class="chart-wrap"><canvas id="chartMontant"></canvas></div>
+        </div>
+      </div>
+
+      <div class="bottom-row">
+        <div class="card">
+          <div class="section-title"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Top Performer du mois</div>
+          <div class="card-content" id="topPerformer">
+            <div class="top-perf-empty">
+              <div class="tpe-title">Aucun top performer</div>
+              <div class="tpe-sub">Les performances de ce mois s'afficheront ici</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export</div>
+          <div class="card-content">
+            <p style="font-size:13px;color:var(--text-2);margin-bottom:14px;line-height:1.6">Téléchargez l'intégralité de la base au format CSV (UTF-8, séparateur point-virgule).</p>
+            <button class="btn btn-red" id="btnExportCSV" style="align-self:flex-start"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exporter CSV</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEARCH -->
+    <section class="view" data-view="search">
+      <div class="spotlight-wrap">
+        <span class="spotlight-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+        <input type="text" class="spotlight" id="spotlightInput" placeholder="Rechercher dans tous les champs (nom, boutique, ref, articles, telegram…)">
+      </div>
+      <div class="search-results" id="searchResults"></div>
+    </section>
+
+    <!-- DOSSIERS -->
+    <section class="view" data-view="dossiers">
+      <div class="dossiers-toolbar">
+        <!-- PHASE 1.5 — Recherche premium avec icône intégrée et bords arrondis -->
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="dossiersSearch" placeholder="Rechercher (référence, boutique, nom, suivi…)">
+        </div>
+        <!-- PHASE 1.5 — Custom dropdown de tri (PAS de <select> natif) -->
+        <div id="sortDropdownMount"></div>
+        <button class="btn btn-red" id="btnCreateDossier"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Créer un dossier</button>
+      </div>
+      <div class="dossier-list" id="dossierList"></div>
+    </section>
+
+    <!-- KB -->
+    <section class="view" data-view="kb">
+      <!-- ═════ SECTION 3 — TOOLBAR KB (recherche + filtres) ═════ -->
+      <div class="kb-toolbar">
+        <div class="kb-search-row">
+          <div class="kb-search-wrap">
+            <svg class="kb-search-ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input id="kbSearch" type="text" placeholder="Rechercher une boutique par nom…" autocomplete="off" spellcheck="false">
+            <button class="kb-search-clear" id="kbSearchClear" title="Effacer" aria-label="Effacer">
+              <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+            </button>
+          </div>
+          <div class="kb-filters-wrap">
+            <button class="kb-filters-btn" id="kbFiltersBtn" type="button">
+              <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              <span>Filtres</span>
+              <span class="kb-filters-dot" id="kbFiltersDot" style="display:none"></span>
+            </button>
+            <div class="kb-filters-pop" id="kbFiltersPop">
+              <div class="kb-fp-title">Délai maximum</div>
+              <div class="kb-fp-pills" data-group="delai">
+                <button class="kb-fp-pill active" data-delai="all">Tous</button>
+                <button class="kb-fp-pill" data-delai="7">&lt; 7 j</button>
+                <button class="kb-fp-pill" data-delai="14">&lt; 14 j</button>
+                <button class="kb-fp-pill" data-delai="30">&lt; 30 j</button>
+                <button class="kb-fp-pill" data-delai="60">&lt; 60 j</button>
+              </div>
+              <div class="kb-fp-title">Plage de prix (€)</div>
+              <div class="kb-fp-prices">
+                <input id="kbPriceMin" type="number" min="0" step="10" placeholder="Min">
+                <span>—</span>
+                <input id="kbPriceMax" type="number" min="0" step="10" placeholder="Max">
+              </div>
+              <div class="kb-fp-actions">
+                <button class="kb-fp-reset" id="kbFiltersReset" type="button">Réinitialiser</button>
+                <button class="kb-fp-close" id="kbFiltersClose" type="button">Fermer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="kb-cats" id="kbCats">
+          <button class="kb-cat-pill active" data-cat="all">Tous</button>
+          <button class="kb-cat-pill" data-cat="High-Tech">High-Tech</button>
+          <button class="kb-cat-pill" data-cat="Mode">Mode</button>
+          <button class="kb-cat-pill" data-cat="Sport">Sport</button>
+          <button class="kb-cat-pill" data-cat="Maison">Maison</button>
+          <button class="kb-cat-pill" data-cat="Beauté">Beauté</button>
+          <button class="kb-cat-pill" data-cat="Alimentation">Alimentation</button>
+          <button class="kb-cat-pill" data-cat="Luxe">Luxe</button>
+          <button class="kb-cat-pill" data-cat="Populaire">Populaire</button>
+        </div>
+      </div>
+      <div class="kb-grid" id="kbGrid"></div>
+    </section>
+
+    <!-- ARCHIVES -->
+    <section class="view" data-view="archives">
+      <div style="margin-bottom:18px;font-size:13px;color:var(--text-2);font-weight:500;line-height:1.6">Les dossiers archivés sont conservés ici. Vous pouvez les <strong style="color:var(--text)">restaurer</strong> à tout moment, ils réapparaîtront dans la vue principale. <em>Leurs montants restent comptabilisés dans le tableau de bord.</em></div>
+      <div class="dossier-list" id="archiveList"></div>
+    </section>
+
+    <!-- TEAM -->
+    <section class="view" data-view="team">
+      <div class="team-grid">
+        <div class="profile-card">
+          <div class="profile-avatar">CR</div>
+          <div class="profile-name">@COCAINErRF</div>
+          <div class="profile-role">Administrateur principal</div>
+          <div class="profile-stats">
+            <div class="ps-item">
+              <div class="ps-val" id="profSession">00:00:00</div>
+              <div class="ps-lbl">Session</div>
+            </div>
+            <div class="ps-item">
+              <div class="ps-val" id="profActions">0</div>
+              <div class="ps-lbl">Actions</div>
+            </div>
+          </div>
+        </div>
+        <div class="terminal" id="logTerminal">
+          <div class="terminal-head">
+            <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+            <span class="term-title">Journal de bord — session</span>
+          </div>
+          <div id="logBody"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SECTION 2.1 — CONFIRM MODAL D'ARCHIVAGE
+     Texte central : "Archiver le dossier <strong>[REF]</strong> ?"
+     Sous-ligne   : "Le dossier sera placé dans Archives."
+     ═══════════════════════════════════════════════════════════════════ -->
+<div id="confirmOverlay">
+  <div class="confirm-modal">
+    <div class="confirm-icon"><svg viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></div>
+    <div class="confirm-main" id="confirmMain">Archiver le dossier <span class="ref-strong" id="confirmRef">—</span> ?</div>
+    <div class="confirm-sub" id="confirmSub">Le dossier sera placé dans Archives.</div>
+    <div class="confirm-btns">
+      <button class="btn btn-ghost" id="confirmCancel">Annuler</button>
+      <button class="btn btn-red" id="confirmOk">Archiver</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastWrap"></div>
+
+<script>
+/* Handler global pour ne JAMAIS bloquer l'app sur une erreur silencieuse */
+window.addEventListener('error', function(e){
+  console.error('[GlobalError]', e.message, e.filename, e.lineno);
+  try { var b = document.getElementById('logBody'); if(b){ var l=document.createElement('div'); l.className='log-line'; l.innerHTML='<span class="log-time">[ERR]</span> <span class="log-warn">'+(e.message||'erreur')+'</span>'; b.appendChild(l); } } catch(_){}
+});
+window.addEventListener('unhandledrejection', function(e){
+  console.error('[Promise]', e.reason);
+});
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   FIREBASE INIT — CONFIGURATION ORIGINELLE PRÉSERVÉE INTACTE
+   ═══════════════════════════════════════════════════════════════════ */
+const firebaseConfig = {
+  apiKey: "AIzaSyCXmDjMiL33VYMvMxeBhj68qP0x5OTQJXc",
+  authDomain: "cocaine---refund.firebaseapp.com",
+  projectId: "cocaine---refund",
+  storageBucket: "cocaine---refund.firebasestorage.app",
+  messagingSenderId: "411455342907",
+  appId: "1:411455342907:web:1b61d04459135567a68f1e"
+};
+var db = null;
+var COL = null;
+var FB_OK = false;
+function initFirebase(){
+  try {
+    if(typeof firebase === 'undefined'){ return false; }
+    if(!firebase.apps || !firebase.apps.length){
+      firebase.initializeApp(firebaseConfig);
+    }
+    db = firebase.firestore();
+    COL = db.collection('commandes');
+    FB_OK = true;
+    return true;
+  } catch(e){
+    console.error('[Firebase init]', e);
+    FB_OK = false;
+    return false;
+  }
+}
+initFirebase();
+if(!FB_OK){
+  setTimeout(initFirebase, 800);
+  setTimeout(initFirebase, 2000);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════════════════════════════════ */
+var state = {
+  user: null,
+  view: 'dashboard',
+  dossiers: [],     // dossiers ACTIFS (archive !== true)
+  archived: [],     // dossiers ARCHIVÉS — conservés en mémoire pour les KPI
+  filtered: [],
+  searchQ: '',
+  dossierFilter: '',
+  sortBy: 'urgent',
+  killTaps: [],
+  idleTimer: null,
+  sessionStart: null,
+  sessionTimer: null,
+  actionsCount: 0,
+  unsubscribe: null,
+  flatpickrInstances: [],  // pour cleanup
+  // SECTION 3 — Filtres KB (recherche, catégorie, délai, prix)
+  kbFilters: {
+    search: '',
+    category: 'all',
+    delai: 'all',
+    priceMin: null,
+    priceMax: null
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   SHOPS — règles métier (préservé intact)
+   ═══════════════════════════════════════════════════════════════════ */
+var SHOPS = [
+  /* ─── Boutiques existantes (mises à jour : url, articles, platformType, CATÉGORIE) ─── */
+  {name:'Amazon',     categorie:'High-Tech', platformType:'Plateforme & Vendeur', articles:'4',  url:'https://www.amazon.fr',
+   tiers:[{min:300, max:5000, methode:'FTID',     fee:25}], delai:'7 à 35 jours'},
+  {name:'Adidas',     categorie:'Sport', platformType:'Plateforme', articles:'10', url:'https://www.adidas.fr',
+   tiers:[
+     {min:0,   max:350,  methode:'EB & DNA', fee:0},
+     {min:350, max:1500, methode:'FTID',     fee:25}
+   ], delai:'1 à 30 jours'},
+  {name:'Swarovski',  categorie:'Luxe', platformType:'Plateforme', articles:'3',  url:'https://www.swarovski.com',
+   tiers:[
+     {min:0,   max:200,  methode:'EB & DNA', fee:0},
+     {min:200, max:1000, methode:'FTID',     fee:25}
+   ], delai:'3 à 30 jours'},
+  {name:'Montec',     categorie:'Sport', platformType:'Plateforme', articles:'10', url:'https://www.montecwear.com',
+   tiers:[{min:200, max:1000, methode:'FTID', fee:25}], delai:'20 à 30 jours'},
+  {name:'Secretlab',  categorie:'Maison', platformType:'Plateforme', articles:'1',  url:'https://secretlab.eu',
+   multiMethod:true, tiers:[
+     {min:200, max:1000, methode:'DNA PR',   fee:45},
+     {min:200, max:1000, methode:'FTID',     fee:25}
+   ], delai:'15 à 20 jours'},
+  {name:'AliExpress', categorie:'High-Tech', platformType:'Plateforme & Vendeur', articles:'2',  url:'https://fr.aliexpress.com',
+   tiers:[{min:200, max:1200, methode:'FTID/LIT', fee:25}], delai:'20 à 30 jours'},
+  {name:'Oscaro',     categorie:'Maison', platformType:'Plateforme', articles:'2',  url:'https://www.oscaro.com',
+   tiers:[{min:200, max:550, methode:'FTID', fee:25}], delai:'15 à 30 jours'},
+  {name:'Paris Saint-Germain', categorie:'Sport', platformType:'Plateforme', articles:'6', url:'https://store.psg.fr',
+   tiers:[{min:65, max:220, methode:'EB & DNA', fee:0}], delai:'3 à 7 jours'},
+  {name:'Philips Hue', categorie:'Maison', platformType:'Plateforme', articles:'4', url:'https://www.philips-hue.com',
+   tiers:[{min:0, max:600, methode:'EB & DNA', fee:0}], delai:'1 à 4 jours'},
+
+  /* ─── Boutiques précédemment ajoutées ─── */
+  {name:'Rhinoshield', categorie:'High-Tech', platformType:'Plateforme', articles:'4', url:'https://rhinoshield.fr',
+   tiers:[{min:0, max:120, methode:'EB & DNA', fee:0}], delai:'3 à 7 jours'},
+  {name:'Bose', categorie:'High-Tech', platformType:'Plateforme', articles:'5', url:'https://www.bose.fr',
+   multiMethod:true, tiers:[
+     {min:0,   max:500,  methode:'EB',       fee:0},
+     {min:300, max:1000, methode:'FTID', fee:25}
+   ], delai:'15 à 30 jours'},
+  {name:'McDonald’s', categorie:'Alimentation', platformType:'Plateforme', articles:'∞', url:'https://www.mcdonalds.fr',
+   tiers:[{min:0, max:50, methode:'EB & DNA', fee:0}], delai:'Instantané'},
+  {name:'Onatera', categorie:'Beauté', platformType:'Plateforme', articles:'10', url:'https://www.onatera.com',
+   multiMethod:true, tiers:[
+     {min:65,  max:200, methode:'EB & DNA', fee:0},
+     {min:100, max:400, methode:'FTID', fee:25}
+   ], delai:'7 à 15 jours'},
+  {name:'Mano Mano', categorie:'Maison', platformType:'Plateforme & Vendeur', articles:'8', url:'https://www.manomano.fr',
+   tiers:[{min:0, max:1000, methode:'FTID', fee:25}], delai:'15 à 30 jours'},
+  {name:'Arc’Teryx', categorie:'Sport', platformType:'Plateforme', articles:'8', url:'https://arcteryx.com',
+   tiers:[{min:0, max:1800, methode:'FTID', fee:25}], delai:'15 à 20 jours'},
+  {name:'Moulinex', categorie:'Maison', platformType:'Plateforme', articles:'1', url:'https://www.moulinex.fr',
+   tiers:[{min:0, max:1500, methode:'LIT', fee:25}], delai:'5 à 15 jours'},
+  {name:'Samsonite', categorie:'Mode', platformType:'Plateforme', articles:'2', url:'https://www.samsonite.fr',
+   tiers:[{min:0, max:1200, methode:'FTID', fee:25}], delai:'5 à 15 jours'},
+  {name:'Zara', categorie:'Mode', platformType:'Plateforme', articles:'8', url:'https://www.zara.com',
+   tiers:[{min:0, max:400, methode:'FTID', fee:25}], delai:'15 à 20 jours'},
+
+  /* SECTION 5 — H&M : ajout EB (0-250€, Gratuit) + conservation du FTID existant */
+  {name:'H&M', categorie:'Mode', platformType:'Plateforme', articles:'20', url:'https://www2.hm.com',
+   multiMethod:true, tiers:[
+     {min:0, max:250,  methode:'EB',       fee:0},
+     {min:0, max:2000, methode:'FTID', fee:25}
+   ], delai:'15 à 20 jours'},
+
+  {name:'Zadig & Voltaire', categorie:'Mode', platformType:'Plateforme', articles:'5', url:'https://www.zadig-et-voltaire.com',
+   tiers:[{min:0, max:1200, methode:'FTID/LIT', fee:25}], delai:'15 à 20 jours'},
+  {name:'Canyon', categorie:'Sport', platformType:'Plateforme', articles:'1', url:'https://www.canyon.com',
+   multiMethod:true, tiers:[
+     {min:0, max:6000, methode:'DNA PR',   fee:45},
+     {min:0, max:6000, methode:'FTID/LIT', fee:25}
+   ], delai:'60 à 120 jours'},
+  {name:'Fursac', categorie:'Mode', platformType:'Plateforme', articles:'6', url:'https://www.fursac.com',
+   tiers:[{min:0, max:1000, methode:'FTID', fee:25}], delai:'15 à 20 jours'},
+  {name:'Veepee', categorie:'Mode', platformType:'Plateforme', articles:'1', url:'https://www.veepee.fr',
+   tiers:[{min:0, max:1200, methode:'FTID', fee:25}], delai:'15 à 20 jours'},
+
+  /* SECTION 5 — Cos : ajout DNA (0-250€, Gratuit) + conservation du FTID existant */
+  {name:'Cos', categorie:'Mode', platformType:'Plateforme', articles:'8', url:'https://www.cos.com',
+   multiMethod:true, tiers:[
+     {min:0, max:250,  methode:'DNA',      fee:0},
+     {min:0, max:1000, methode:'FTID', fee:25}
+   ], delai:'15 à 20 jours'},
+
+  {name:'Dreame', categorie:'Maison', platformType:'Plateforme', articles:'1', url:'https://fr.dreametech.com/',
+   tiers:[{min:0, max:1500, methode:'FTID', fee:25}], delai:'15 à 20 jours'},
+  {name:'Lounge', categorie:'Mode', platformType:'Plateforme', articles:'10', url:'https://www.lounge.com',
+   multiMethod:true, tiers:[
+     {min:0,   max:250, methode:'EB & DNA', fee:0},
+     {min:250, max:550, methode:'FTID',     fee:25}
+   ], delai:'15 à 20 jours'},
+  {name:'Get your guide', categorie:'Populaire', platformType:'Plateforme', articles:'∞', url:'https://www.getyourguide.fr',
+   tiers:[{min:0, max:1000, methode:'MÉTHÉO', fee:0}], delai:'3 à 5 jours'},
+  {name:'On running', categorie:'Sport', platformType:'Plateforme', articles:'8', url:'https://www.on.com',
+   multiMethod:true, tiers:[
+     {min:0,   max:500,  methode:'EB & DNA', fee:0},
+     {min:500, max:1000, methode:'FTID/LIT', fee:25}
+   ], delai:'15 à 20 jours'},
+  {name:'Rayban', categorie:'Mode', platformType:'Plateforme', articles:'2', url:'https://www.ray-ban.com',
+   tiers:[{min:0, max:1000, methode:'FTID', fee:25}], delai:'7 à 20 jours'},
+  {name:'Suitsupply', categorie:'Mode', platformType:'Plateforme', articles:'8', url:'https://suitsupply.com',
+   tiers:[{min:0, max:800, methode:'FTID', fee:25}], delai:'15 à 20 jours'},
+  {name:'Pandora', categorie:'Luxe', platformType:'Plateforme', articles:'2', url:'https://fr.pandora.net',
+   tiers:[{min:0, max:400, methode:'EB & DNA', fee:0}], delai:'3 à 7 jours'},
+
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION 5 — 12 NOUVELLES BOUTIQUES (valeurs EXACTES du brief)
+     ATTENTION ORTHOGRAPHE DES MÉTHODES : "FTID" (≠ FTID/LIT), "EB" (≠ EB & DNA),
+     "DNA" (seul), conformément au brief.
+     ═══════════════════════════════════════════════════════════════════ */
+  {name:'Ooni', categorie:'Maison', platformType:'Plateforme', articles:'1', url:'https://ooni.com',
+   tiers:[{min:0, max:600, methode:'DNA', fee:0}], delai:'7 à 10 jours'},
+
+  {name:'Ninja Kitchen', categorie:'Maison', platformType:'Plateforme', articles:'1', url:'https://www.ninjakitchen.fr',
+   tiers:[{min:0, max:1000, methode:'FTID', fee:25}], delai:'15 à 20 jours'},
+
+  {name:'Maje', categorie:'Mode', platformType:'Plateforme', articles:'8', url:'https://www.maje.com',
+   tiers:[{min:0, max:600, methode:'FTID', fee:25}], delai:'15 à 20 jours'},
+
+  {name:'Massimo Dutti', categorie:'Mode', platformType:'Plateforme', articles:'2', url:'https://www.massimodutti.com',
+   tiers:[{min:0, max:800, methode:'FTID', fee:25}], delai:'20 à 35 jours'},
+
+  {name:'Alo', categorie:'Sport', platformType:'Plateforme', articles:'6', url:'https://www.aloyoga.com',
+   tiers:[{min:0, max:500, methode:'EB', fee:0}], delai:'1 à 10 jours'},
+
+  {name:'Iherb', categorie:'Alimentation', platformType:'Plateforme', articles:'11', url:'https://www.iherb.com',
+   tiers:[{min:0, max:200, methode:'EB', fee:0}], delai:'1 à 7 jours'},
+
+  {name:'Byredo', categorie:'Beauté', platformType:'Plateforme', articles:'6', url:'https://www.byredo.com',
+   tiers:[{min:0, max:300, methode:'FTID', fee:25}], delai:'15 à 25 jours'},
+
+  {name:'Gym shark', categorie:'Sport', platformType:'Plateforme', articles:'10', url:'https://www.gymshark.com',
+   multiMethod:true, tiers:[
+     {min:0,   max:350, methode:'DNA',  fee:0},
+     {min:350, max:800, methode:'FTID', fee:25}
+   ], delai:'1 à 15 jours'},
+
+  {name:'Sony', categorie:'High-Tech', platformType:'Plateforme', articles:'2', url:'https://www.sony.fr',
+   tiers:[{min:0, max:1600, methode:'FTID', fee:25}], delai:'60 à 70 jours'},
+
+  {name:'YSL Beauty', categorie:'Beauté', platformType:'Plateforme', articles:'2', url:'https://www.yslbeauty.fr',
+   tiers:[{min:0, max:250, methode:'DNA', fee:0}], delai:'7 à 15 jours'},
+
+  {name:'La roche posay', categorie:'Beauté', platformType:'Plateforme', articles:'6', url:'https://www.laroche-posay.fr',
+   tiers:[{min:0, max:250, methode:'DNA', fee:0}], delai:'7 à 10 jours'},
+
+  {name:'Microsoft', categorie:'High-Tech', platformType:'Plateforme', articles:'2', url:'https://www.microsoft.com',
+   tiers:[{min:0, max:1000, methode:'FTID', fee:25}], delai:'20 à 35 jours'}
+];
+
+function getShop(name){
+  if(!name) return null;
+  var n = String(name).toLowerCase();
+  for(var i=0;i<SHOPS.length;i++){
+    if(SHOPS[i].name.toLowerCase()===n) return SHOPS[i];
+  }
+  return null;
+}
+
+function getMethodAndFee(shopName, montant, methodChoice){
+  var shop = getShop(shopName);
+  if(!shop) return {methode:'—', fee:0, found:false};
+  var amt = parseFloat(montant)||0;
+  if(shop.multiMethod){
+    var t = shop.tiers.filter(function(x){return x.methode===methodChoice})[0];
+    if(t) return {methode:t.methode, fee:t.fee, found:true};
+    var def = shop.tiers.filter(function(x){return x.methode==='FTID'})[0] || shop.tiers[0];
+    return {methode:def.methode, fee:def.fee, found:true};
+  }
+  for(var i=0;i<shop.tiers.length;i++){
+    var t2 = shop.tiers[i];
+    if(amt>=t2.min && amt<=t2.max) return {methode:t2.methode, fee:t2.fee, found:true};
+  }
+  return {methode:shop.tiers[0].methode, fee:shop.tiers[0].fee, found:false};
+}
+
+var STAGES = [
+  {key:0, label:'Dossier Reçu'},
+  {key:1, label:'En analyse'},
+  {key:2, label:'Relance'},
+  {key:3, label:'Remboursé'},
+  {key:4, label:'Commission Payée'}
+];
+
+/* Options de tri (utilisées par le custom dropdown) */
+var SORT_OPTIONS = [
+  {value:'urgent', label:'Plus urgents'},
+  {value:'recent', label:'Plus récents'},
+  {value:'amount', label:'Montant ↓'},
+  {value:'name',   label:'Boutique A→Z'}
+];
+
+/* ═══════════════════════════════════════════════════════════════════
+   UTILITIES
+   ═══════════════════════════════════════════════════════════════════ */
+function $(s,p){return (p||document).querySelector(s)}
+function $$(s,p){return Array.from((p||document).querySelectorAll(s))}
+function escHtml(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
+function fmtEUR(n){
+  var v = parseFloat(n)||0;
+  return v.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+'€';
+}
+function shopSlug(name){
+  return String(name||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+}
+/* ═══════════════════════════════════════════════════════════════════
+   AUDIT LOGOS — getLogoPath (API publique)
+   ────────────────────────────────────────────────────────────────────
+   Implémente la convention demandée : nom boutique → chemin fichier.
+   Note d'implémentation : la regex naïve `/\s+/g` du brief produit des
+   noms de fichiers fragiles (h&m.png, mcdonald's.png, arc'teryx.png) —
+   illisibles sous Windows et casse-pieds en URL. On délègue donc à
+   shopSlug() qui produit un slug ASCII propre, identique pour toutes
+   les boutiques sauf 5 cas à caractères spéciaux où shopSlug est meilleur.
+   Si une boutique veut forcer un nom de fichier custom, elle déclare
+   `logo:'mon-fichier.png'` dans son objet SHOPS — on respecte alors.
+   ═══════════════════════════════════════════════════════════════════ */
+function getLogoPath(nameOrShop){
+  if(!nameOrShop) return '';
+  // Cas 1 : on reçoit un objet SHOP avec une propriété `logo` explicite
+  if(typeof nameOrShop === 'object'){
+    if(nameOrShop.logo) return 'logos/'+nameOrShop.logo;
+    return 'logos/'+shopSlug(nameOrShop.name)+'.png';
+  }
+  // Cas 2 : on reçoit un nom de boutique (string).
+  // Si la boutique existe dans SHOPS et a un `logo` explicite, on l'utilise.
+  var s = (typeof getShop === 'function') ? getShop(nameOrShop) : null;
+  if(s && s.logo) return 'logos/'+s.logo;
+  return 'logos/'+shopSlug(nameOrShop)+'.png';
+}
+function shopInitials(name){
+  if(!name) return '?';
+  var n = String(name).trim();
+  // Coupe sur espaces, tirets, esperluettes, apostrophes — produit des initiales propres
+  // (H&M → HM, Zadig & Voltaire → ZV, McDonald's → MC, Arc'Teryx → AR, Get your guide → GYG)
+  var words = n.split(/[\s\-&'\u2019\.]+/).filter(Boolean);
+  if(words.length >= 2){
+    return words.slice(0,3).map(function(w){return w.charAt(0).toUpperCase()}).join('');
+  }
+  // Mot unique : on garde 2 premières lettres alphanumériques
+  return n.replace(/[^a-zA-Z0-9]/g,'').substring(0,2).toUpperCase() || '?';
+}
+/* ═══════════════════════════════════════════════════════════════════
+   FIX BUG ALIGNEMENT — logoBlock RÉPARÉ
+   ────────────────────────────────────────────────────────────────────
+   Avant : onerror="this.parentNode.outerHTML=..." DÉTRUISAIT le conteneur
+           .shop-logo, brisant la grille du dossier-head et créant des
+           résidus de code parasites (">) à cause des " mal échappés
+           dans l'attribut HTML.
+   Après : Le conteneur .shop-logo reste en place quoi qu'il arrive
+           (taille fixe verrouillée par CSS). Seule l'<img> est remplacée
+           par un <span> fallback, via une fonction globale dédiée
+           (window.__logoFallback) — pas d'inline JSON dans l'attribut,
+           donc plus aucun problème d'échappement.
+   ═══════════════════════════════════════════════════════════════════ */
+function logoBlock(shopName, sizeClass){
+  var sz = sizeClass||'';
+  if(!shopName) return '<div class="shop-logo fallback '+sz+'"><span>?</span></div>';
+  var initials = shopInitials(shopName);
+  // AUDIT LOGOS — passe par getLogoPath : respecte `logo:` custom si déclaré dans SHOPS,
+  // sinon dérive le chemin via shopSlug(). Plus besoin de slug local.
+  var path = getLogoPath(shopName);
+  // Couleur de fallback déterministe par boutique (cf. window.__logoFallback)
+  // pour donner du caractère à la pastille initiale au lieu d'un rouge uniforme.
+  return '<div class="shop-logo '+sz+'" data-fallback-initials="'+escHtml(initials)+'" data-fallback-name="'+escHtml(shopName)+'">'
+    +'<img src="'+escHtml(path)+'" alt="'+escHtml(shopName)+'" '
+    +'onerror="window.__logoFallback&amp;&amp;window.__logoFallback(this)">'
+    +'</div>';
+}
+/* Fonction GLOBALE de fallback — appelée par l'attribut onerror de l'img.
+   AUDIT LOGOS : génère une pastille de couleur unie déterministe (calculée
+   sur le nom de la boutique) avec l'initiale en blanc au centre.
+   Le conteneur .shop-logo (taille fixe) reste à sa place dans la grille. */
+window.__logoFallback = function(imgEl){
+  if(!imgEl || !imgEl.parentNode) return;
+  var box = imgEl.parentNode;
+  var initials = box.getAttribute('data-fallback-initials') || '?';
+  var name = box.getAttribute('data-fallback-name') || '';
+  // Hash simple → teinte HSL stable par boutique
+  var h = 0;
+  for(var i=0;i<name.length;i++){ h = (h*31 + name.charCodeAt(i)) >>> 0; }
+  var hue = h % 360;
+  var bg = 'linear-gradient(135deg,hsl('+hue+',62%,46%),hsl('+((hue+18)%360)+',62%,34%))';
+  box.classList.add('fallback-auto');
+  box.setAttribute('style', 'background:'+bg+';color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center');
+  box.innerHTML = '<span>'+initials+'</span>';
+};
+/* Petit logo (24px) pour le custom dropdown — fallback initiales rouge
+   FIX BUG : même réparation que logoBlock — pas de outerHTML, pas de JSON
+   dans l'attribut. Le conteneur .cdd-logo reste en place. */
+function logoMiniForDropdown(shopName){
+  if(!shopName) return '<div class="cdd-logo" style="background:linear-gradient(135deg,var(--red),var(--red-dark));color:#fff;font-weight:900;font-size:10px;display:flex;align-items:center;justify-content:center"><span>?</span></div>';
+  var initials = shopInitials(shopName);
+  var path = getLogoPath(shopName);
+  return '<div class="cdd-logo" data-fallback-initials="'+escHtml(initials)+'" data-fallback-name="'+escHtml(shopName)+'">'
+    +'<img src="'+escHtml(path)+'" alt="'+escHtml(shopName)+'" '
+    +'onerror="window.__cddLogoFallback&amp;&amp;window.__cddLogoFallback(this)">'
+    +'</div>';
+}
+/* Fallback dédié au mini-logo des dropdowns — préserve le conteneur */
+window.__cddLogoFallback = function(imgEl){
+  if(!imgEl || !imgEl.parentNode) return;
+  var box = imgEl.parentNode;
+  var initials = box.getAttribute('data-fallback-initials') || '?';
+  box.style.background = 'linear-gradient(135deg,#E60000,#C00000)';
+  box.style.color = '#fff';
+  box.style.fontWeight = '900';
+  box.style.fontSize = '9px';
+  box.style.letterSpacing = '.2px';
+  box.style.display = 'flex';
+  box.style.alignItems = 'center';
+  box.style.justifyContent = 'center';
+  box.innerHTML = '<span>'+initials+'</span>';
+};
+function parseDate(d){
+  if(!d) return null;
+  if(d.toDate) return d.toDate();
+  if(d instanceof Date) return d;
+  var t = Date.parse(d);
+  if(!isNaN(t)) return new Date(t);
+  var m = String(d).match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+  if(m){
+    var y = m[3].length===2?2000+parseInt(m[3],10):parseInt(m[3],10);
+    return new Date(y, parseInt(m[2],10)-1, parseInt(m[1],10));
+  }
+  return null;
+}
+function fmtDateFR(d){
+  var dt = parseDate(d);
+  if(!dt) return '—';
+  return dt.toLocaleDateString('fr-FR');
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TOAST + LOGS
+   ═══════════════════════════════════════════════════════════════════ */
+function toast(msg, type){
+  type = type||'info';
+  var el = document.createElement('div');
+  el.className = 'toast '+type;
+  var ic = type==='ok'?'✓':type==='err'?'✕':'•';
+  el.innerHTML = '<span style="color:var(--'+(type==='ok'?'green':type==='err'?'red':'blue')+');font-weight:900">'+ic+'</span><span>'+escHtml(msg)+'</span>';
+  $('#toastWrap').appendChild(el);
+  setTimeout(function(){el.classList.add('out');setTimeout(function(){el.remove()},300)}, 2800);
+}
+
+function logEvent(action, evt, lvl){
+  state.actionsCount++;
+  var d = new Date();
+  var hh = String(d.getHours()).padStart(2,'0');
+  var mm = String(d.getMinutes()).padStart(2,'0');
+  var ss = String(d.getSeconds()).padStart(2,'0');
+  var line = document.createElement('div');
+  line.className = 'log-line';
+  line.innerHTML = '<span class="log-time">['+hh+':'+mm+':'+ss+']</span> <span class="log-act">'+escHtml(action)+'</span> <span class="'+(lvl==='warn'?'log-warn':'log-evt')+'">'+escHtml(evt)+'</span>';
+  var body = $('#logBody');
+  if(body){
+    body.appendChild(line);
+    var term = $('#logTerminal');
+    if(term) term.scrollTop = term.scrollHeight;
+  }
+  var pa = $('#profActions');
+  if(pa) pa.textContent = state.actionsCount;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   THEME
+   ═══════════════════════════════════════════════════════════════════ */
+function applyTheme(t){
+  document.body.setAttribute('data-theme', t);
+  try{ localStorage.setItem('qg_theme', t); }catch(e){}
+  var lab = $('#themeLabel');
+  if(lab) lab.textContent = t==='dark'?'Clair':'Sombre';
+  var ic = $('#themeIcon');
+  if(ic){
+    if(t==='dark'){
+      ic.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+    }else{
+      ic.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+    }
+  }
+}
+(function initTheme(){
+  var saved = 'light';
+  try{ saved = localStorage.getItem('qg_theme') || 'light'; }catch(e){}
+  applyTheme(saved);
+})();
+
+/* ═══════════════════════════════════════════════════════════════════
+   AUTH — SHA-256 (Web Crypto API) — HASHES CIBLES PRÉSERVÉS INTACTS
+   ═══════════════════════════════════════════════════════════════════ */
+var AUTH_HASH_USER  = 'fc3e862cad74b45986963811458cd113a628d2c1769f4b30167e91d49a60a27f';
+var AUTH_HASH_USER2 = '9558d1e317d799b3833a79be3c477ce9203649dd5394610e6417ae75539c1762';
+var AUTH_HASH_PASS  = '74ce2d448418be3ec80d8f42859f923664257b67ebb0f2ed2381f067a3bf2cf9';
+
+async function sha256(str){
+  if(!window.crypto || !window.crypto.subtle){
+    throw new Error('Web Crypto API non disponible');
+  }
+  var enc = new TextEncoder().encode(str);
+  var buf = await window.crypto.subtle.digest('SHA-256', enc);
+  var arr = Array.from(new Uint8Array(buf));
+  return arr.map(function(b){return b.toString(16).padStart(2,'0')}).join('');
+}
+
+async function tryLogin(){
+  var rawU = $('#loginUser').value||'';
+  var rawP = $('#loginPass').value||'';
+  var u = rawU.replace(/[\s\u00A0\u200B\u200C\u200D\uFEFF]+/g,'').trim();
+  var p = rawP.replace(/[\s\u00A0\u200B\u200C\u200D\uFEFF]+/g,'').trim();
+  var err = $('#loginError');
+
+  if(!u && !p){ err.textContent = 'Veuillez remplir les deux champs.'; return; }
+
+  try{
+    var hu = await sha256(u);
+    var huLow = await sha256(u.toLowerCase());
+    var hp = await sha256(p);
+    var okUser = (hu === AUTH_HASH_USER) || (huLow === AUTH_HASH_USER2) || (hu === AUTH_HASH_USER2);
+    var okPass = (hp === AUTH_HASH_PASS);
+
+    if(okUser && okPass){
+      err.textContent = '';
+      state.user = '@'+u;
+      $('#loginScreen').style.display = 'none';
+      $('#app').classList.add('active');
+      state.sessionStart = Date.now();
+      startSessionTimer();
+      armIdleTimer();
+      logEvent('AUTH','Connexion réussie');
+      toast('Connecté','ok');
+      mountSortDropdown();
+      loadDossiers();
+      renderKB();
+      $('#loginPass').value = '';
+    } else {
+      err.textContent = 'Identifiants invalides.';
+      logEvent('AUTH','Tentative invalide','warn');
+      var modal = $('.login-modal');
+      modal.style.animation = 'none';
+      void modal.offsetWidth;
+      modal.style.animation = 'shake .4s ease';
+    }
+  } catch(e){
+    err.textContent = 'Erreur de chiffrement : '+e.message;
+  }
+}
+
+$('#loginBtn').addEventListener('click', tryLogin);
+$('#loginPass').addEventListener('keydown', function(e){ if(e.key==='Enter') tryLogin(); });
+$('#loginUser').addEventListener('keydown', function(e){ if(e.key==='Enter') $('#loginPass').focus(); });
+
+function startSessionTimer(){
+  if(state.sessionTimer) clearInterval(state.sessionTimer);
+  state.sessionTimer = setInterval(function(){
+    if(!state.sessionStart) return;
+    var s = Math.floor((Date.now()-state.sessionStart)/1000);
+    var hh = String(Math.floor(s/3600)).padStart(2,'0');
+    var mm = String(Math.floor((s%3600)/60)).padStart(2,'0');
+    var ss = String(s%60).padStart(2,'0');
+    var v = hh+':'+mm+':'+ss;
+    var t1 = $('#sessionTimer'); if(t1) t1.textContent = v;
+    var t2 = $('#profSession'); if(t2) t2.textContent = v;
+  }, 1000);
+}
+
+function armIdleTimer(){
+  if(state.idleTimer) clearTimeout(state.idleTimer);
+  state.idleTimer = setTimeout(function(){
+    logEvent('SECURITY','Verrouillage automatique (10min inactivité)','warn');
+    lockSession('Session verrouillée pour inactivité');
+  }, 10*60*1000);
+}
+['mousemove','keydown','click','touchstart','scroll'].forEach(function(ev){
+  document.addEventListener(ev, function(){
+    if(state.user) armIdleTimer();
+  }, {passive:true});
+});
+
+function lockSession(reason){
+  if(state.unsubscribe){ try{state.unsubscribe()}catch(e){} state.unsubscribe=null; }
+  if(state.sessionTimer){ clearInterval(state.sessionTimer); state.sessionTimer=null; }
+  state.user = null;
+  state.dossiers = [];
+  state.archived = [];
+  state.sessionStart = null;
+  $('#app').classList.remove('active');
+  $('#loginScreen').style.display = 'flex';
+  $('#loginPass').value = '';
+  $('#loginError').textContent = reason||'';
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   KILL SWITCH INVISIBLE — préservé intact
+   ═══════════════════════════════════════════════════════════════════ */
+document.addEventListener('keydown', function(e){
+  if(!state.user) return;
+  var tag = (e.target && e.target.tagName)||'';
+  if(tag==='INPUT' || tag==='TEXTAREA' || tag==='SELECT') return;
+  if(e.key==='Shift' || e.key==='Control' || e.key==='Meta' || e.key==='Alt') return;
+  var now = Date.now();
+  state.killTaps.push(now);
+  state.killTaps = state.killTaps.filter(function(t){ return now-t < 300; });
+  if(state.killTaps.length >= 2){
+    state.killTaps = [];
+    killSwitch();
+  }
+});
+function killSwitch(){
+  document.documentElement.innerHTML = '<body style="margin:0;background:#fff"></body>';
+  try{ localStorage.removeItem('qg_theme'); sessionStorage.clear(); }catch(e){}
+  setTimeout(function(){ window.location.replace('https://www.youtube.com'); }, 60);
+}
+
+/* Logout */
+$('#sbLogout').addEventListener('click', function(){
+  logEvent('AUTH','Déconnexion manuelle');
+  lockSession('Vous avez été déconnecté.');
+});
+
+/* Theme toggle */
+$('#themeToggle').addEventListener('click', function(){
+  var cur = document.body.getAttribute('data-theme');
+  var nx = cur==='dark'?'light':'dark';
+  applyTheme(nx);
+  logEvent('UI','Thème : '+nx);
+  if(state.view==='dashboard') renderCharts();
+});
+
+/* Burger mobile */
+$('#burgerMobile').addEventListener('click', function(){
+  $('#sidebar').classList.toggle('open');
+});
+
+/* Sidebar nav */
+$$('.sb-nav-item').forEach(function(it){
+  it.addEventListener('click', function(){
+    var v = it.dataset.view;
+    $$('.sb-nav-item').forEach(function(x){x.classList.remove('active')});
+    it.classList.add('active');
+    $$('.view').forEach(function(x){x.classList.remove('active')});
+    var target = $('.view[data-view="'+v+'"]');
+    if(target) target.classList.add('active');
+    state.view = v;
+    var titles = {
+      dashboard:['Tableau de bord','Vue d\'ensemble — Cocaïne and refund®'],
+      search:['Recherche Globale','Spotlight — interrogez toute la base'],
+      dossiers:['Relances & Dossiers','Gestion CRUD complète'],
+      kb:['Base de Connaissances','Référentiel des boutiques'],
+      archives:['Archives','Corbeille sécurisée — restauration possible'],
+      team:['Équipe & Logs','Profil et journal de bord']
+    };
+    if(titles[v]){
+      $('#tbTitle').firstChild.nodeValue = titles[v][0];
+      $('#tbSub').textContent = titles[v][1];
+    }
+    $('#sidebar').classList.remove('open');
+    if(v==='dossiers') renderDossiers();
+    if(v==='archives') renderArchives();
+    if(v==='search'){ var s=$('#spotlightInput'); if(s) setTimeout(function(){s.focus()},150); }
+    logEvent('NAV','→ '+(titles[v]?titles[v][0]:v));
+  });
+});
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 3 — CUSTOM DROPDOWN COMPONENT
+   ═══════════════════════════════════════════════════════════════════ */
+var CDD_REGISTRY = []; // pour fermeture sur clic extérieur
+
+/**
+ * Crée un custom dropdown.
+ * @param {Object} cfg
+ *   - mountEl     : élément où monter le dropdown (sera vidé)
+ *   - options     : [{value, label, logo?:bool, shopName?:string}]
+ *   - selected    : valeur initiale
+ *   - placeholder : texte si rien
+ *   - withLogos   : bool — affiche le mini-logo (mode "boutiques")
+ *   - onChange    : fn(newValue, optionObj)
+ * @returns {Object} api { setValue, getValue, destroy, root }
+ */
+function createCustomDropdown(cfg){
+  var mount = cfg.mountEl;
+  if(!mount) return null;
+  mount.innerHTML = '';
+
+  var options = cfg.options || [];
+  var current = cfg.selected;
+  var withLogos = !!cfg.withLogos;
+  var placeholder = cfg.placeholder || '— Choisir —';
+
+  var root = document.createElement('div');
+  root.className = 'cdd';
+
+  var trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.className = 'cdd-trigger';
+
+  var menu = document.createElement('ul');
+  menu.className = 'cdd-menu';
+  menu.setAttribute('role','listbox');
+
+  function getOptByVal(v){
+    for(var i=0;i<options.length;i++) if(options[i].value === v) return options[i];
+    return null;
+  }
+
+  function paintTrigger(){
+    var opt = getOptByVal(current);
+    var html = '';
+    if(withLogos){
+      if(opt) html += logoMiniForDropdown(opt.value);
+      else    html += '<div class="cdd-logo" style="background:#e8e8ec;color:#86868b;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center">—</div>';
+    }
+    if(opt){
+      html += '<span class="cdd-text">'+escHtml(opt.label)+'</span>';
+    } else {
+      html += '<span class="cdd-text placeholder">'+escHtml(placeholder)+'</span>';
+    }
+    html += '<span class="cdd-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>';
+    trigger.innerHTML = html;
+  }
+
+  function paintMenu(){
+    menu.innerHTML = options.map(function(o){
+      var sel = (o.value === current) ? ' cdd-selected' : '';
+      var logoHTML = withLogos ? logoMiniForDropdown(o.value) : '';
+      return '<li role="option" data-value="'+escHtml(o.value)+'" class="'+sel+'">'
+        +logoHTML
+        +'<span>'+escHtml(o.label)+'</span>'
+      +'</li>';
+    }).join('');
+    $$('li', menu).forEach(function(li){
+      li.addEventListener('click', function(e){
+        e.stopPropagation();
+        var v = li.getAttribute('data-value');
+        current = v;
+        paintTrigger();
+        paintMenu();
+        close();
+        if(typeof cfg.onChange === 'function'){
+          cfg.onChange(v, getOptByVal(v));
+        }
+      });
+    });
+  }
+
+  function open(){
+    closeAll();
+    root.classList.add('open');
+  }
+  function close(){
+    root.classList.remove('open');
+  }
+  function toggle(){
+    if(root.classList.contains('open')) close(); else open();
+  }
+
+  trigger.addEventListener('click', function(e){
+    e.stopPropagation();
+    toggle();
+  });
+
+  root.appendChild(trigger);
+  root.appendChild(menu);
+  mount.appendChild(root);
+
+  paintTrigger();
+  paintMenu();
+
+  var api = {
+    root: root,
+    setValue: function(v){
+      current = v;
+      paintTrigger();
+      paintMenu();
+    },
+    setOptions: function(newOpts){
+      options = newOpts || [];
+      paintMenu();
+      paintTrigger();
+    },
+    getValue: function(){ return current; },
+    destroy: function(){
+      var idx = CDD_REGISTRY.indexOf(api);
+      if(idx>=0) CDD_REGISTRY.splice(idx,1);
+      try{ root.remove(); }catch(e){}
+    }
+  };
+  CDD_REGISTRY.push(api);
+  return api;
+}
+
+/* SECTION 3.3 — Fermeture sur clic extérieur */
+function closeAll(){
+  CDD_REGISTRY.forEach(function(d){ d.root.classList.remove('open'); });
+}
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.cdd')) closeAll();
+});
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') closeAll();
+});
+
+/* Mount du dropdown de tri */
+var sortDropdownAPI = null;
+function mountSortDropdown(){
+  var mount = document.getElementById('sortDropdownMount');
+  if(!mount) return;
+  if(sortDropdownAPI){ try{sortDropdownAPI.destroy()}catch(e){} sortDropdownAPI=null; }
+  sortDropdownAPI = createCustomDropdown({
+    mountEl: mount,
+    options: SORT_OPTIONS,
+    selected: state.sortBy,
+    placeholder: 'Trier par…',
+    withLogos: false,
+    onChange: function(v){
+      state.sortBy = v;
+      renderDossiers();
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FIRESTORE — load (live) — DOSSIERS ARCHIVÉS GARDÉS EN MÉMOIRE
+   pour calcul KPI/graphiques (Section 2.2 / 2.3)
+   ═══════════════════════════════════════════════════════════════════ */
+function loadDossiers(){
+  if(!FB_OK || !COL){
+    if(!initFirebase()){
+      toast('Firebase indisponible (réseau bloqué)','err');
+      logEvent('DB','Firebase non chargé','warn');
+      return;
+    }
+  }
+  if(state.unsubscribe){ try{state.unsubscribe()}catch(e){} }
+  try {
+    state.unsubscribe = COL.onSnapshot(function(snap){
+      var actifs = [], arch = [];
+      snap.forEach(function(doc){
+        var d = doc.data() || {};
+        d._id = doc.id;
+        // SECTION 1 — normalisation du montant (clé client variable)
+        normalizeMontant(d);
+        if(d.archive === true) arch.push(d);
+        else actifs.push(d);
+      });
+      state.dossiers = actifs;
+      state.archived = arch;
+      renderAll();
+      logEvent('DB','Snapshot — '+actifs.length+' actifs, '+arch.length+' archivés');
+    }, function(err){
+      toast('Erreur Firestore : '+err.message, 'err');
+      logEvent('DB','Erreur snapshot — '+err.message,'warn');
+    });
+  } catch(e){
+    toast('Erreur Firestore : '+e.message, 'err');
+    logEvent('DB','Exception — '+e.message,'warn');
+  }
+}
+
+function renderAll(){
+  renderDashboard();
+  if(state.view==='dossiers') renderDossiers();
+  if(state.view==='archives') renderArchives();
+  if(state.view==='search') runSearch();
+  updateRelanceBadge();
+  updateArchiveBadge();
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 2.2 — DASHBOARD : KPI calculés sur ACTIFS + ARCHIVÉS ensemble
+   ═══════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════
+   FIX BUG CRITIQUE — SECTION 1 (Montant Admin vs Client)
+   ─────────────────────────────────────────────────────────────────
+   Le panel client peut envoyer le montant sous plusieurs clés selon
+   sa version : "Montant total", "montantTotal", "montant_total",
+   "montant", "total", "prix", "amount", "Total"... On lit dans cet
+   ordre de priorité, on retourne le premier qui parse à un nombre.
+   Sans cette tolérance, l'Admin lisait "Montant total" pendant que
+   le client écrivait "montantTotal" → bug "0€" partout.
+   ═══════════════════════════════════════════════════════════════════ */
+function getMontant(d){
+  if(!d) return 0;
+  // Liste exhaustive des clés possibles, par ordre de priorité
+  var keys = [
+    'Montant total','montantTotal','montant_total','montant_Total',
+    'MontantTotal','Montant Total','MONTANT_TOTAL',
+    'montant','Montant','MONTANT',
+    'total','Total','TOTAL',
+    'prix','Prix','price','Price',
+    'amount','Amount','AMOUNT'
+  ];
+  for(var i=0;i<keys.length;i++){
+    var k = keys[i];
+    if(d[k] !== undefined && d[k] !== null && d[k] !== ''){
+      // Accepte aussi les strings "1 234,56 €" du client
+      var raw = String(d[k]).replace(/\s/g,'').replace(/€/g,'').replace(/,/g,'.');
+      var n = parseFloat(raw);
+      if(!isNaN(n) && isFinite(n)) return n;
+    }
+  }
+  return 0;
+}
+/* Normalise systématiquement la valeur reçue : à chaque snapshot, si
+   on trouve le montant sous une clé alternative, on le recopie aussi
+   dans 'Montant total' pour que TOUTES les autres lectures du code
+   (affichage carte, message Telegram, export...) restent cohérentes. */
+function normalizeMontant(d){
+  if(!d) return d;
+  var existing = parseFloat(d['Montant total']);
+  if(isNaN(existing) || existing === 0){
+    var v = getMontant(d);
+    if(v > 0) d['Montant total'] = v;
+  }
+  return d;
+}
+function getDeliveryDate(d){ return parseDate(d['Livraison prévue']); }
+function isPerso(d){ return d._type === 'Personnel'; }
+
+function renderDashboard(){
+  // PHASE 4.3 — Concatène ACTIFS + ARCHIVÉS pour les KPI globaux (archivés comptés)
+  var allForKpi = state.dossiers.concat(state.archived);
+
+  var total = state.dossiers.length;   // l'indicateur "dossiers actifs" garde sa sémantique
+  var ca = allForKpi.reduce(function(s,d){return s+getMontant(d)},0);
+
+  // PHASE 3.5 — Bénéfice Net : si Clientèle, on déduit SYSTÉMATIQUEMENT le coût de la méthode.
+  // Si Personnel → bénéfice 0€.
+  var net = allForKpi.reduce(function(s,d){
+    if(isPerso(d)) return s;
+    var m = getMontant(d);
+    var fee = getMethodFee(d._methodChoice);
+    return s + Math.max(0, m*0.40 - fee);
+  },0);
+
+  var now = new Date();
+  var in7 = new Date(now.getTime() + 7*24*3600*1000);
+  // Radar : seulement les ACTIFS (les archivés sont conclus, pas en attente)
+  var radar = state.dossiers.reduce(function(s,d){
+    if(isPerso(d)) return s;
+    var dt = getDeliveryDate(d);
+    if(dt && dt >= now && dt <= in7){
+      var m = getMontant(d);
+      var fee = getMethodFee(d._methodChoice);
+      return s + Math.max(0, m*0.40 - fee);
+    }
+    return s;
+  },0);
+
+  $('#kpiTotal').textContent = total;
+  $('#kpiTotalSub').textContent = total>1?'dossiers actifs':'dossier actif';
+  $('#kpiCA').textContent = fmtEUR(ca);
+  $('#kpiNet').textContent = fmtEUR(net);
+  $('#kpiRadar').textContent = fmtEUR(radar);
+
+  // SECTION 6.1 — Top performer : carte sobre si vide, jamais de symboles parasites
+  var month = now.getMonth(), year = now.getFullYear();
+  var perf = {};
+  allForKpi.forEach(function(d){
+    var dt = parseDate(d['Date de commande']) || parseDate(d.createdAt);
+    if(!dt) return;
+    if(dt.getMonth()===month && dt.getFullYear()===year){
+      var b = (d.Boutique||'').trim();
+      if(!b) return;       // aucun nom → on ignore (pas de "" "—" parasite)
+      perf[b] = (perf[b]||0) + getMontant(d);
+    }
+  });
+  var top = Object.keys(perf).sort(function(a,b){return perf[b]-perf[a]})[0];
+  var tp = $('#topPerformer');
+  if(top){
+    tp.innerHTML = '<div style="display:flex;align-items:center;gap:16px;padding:4px 2px">'
+      +logoBlock(top)
+      +'<div style="flex:1;min-width:0">'
+        +'<div style="font-size:11px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:4px">Boutique du mois</div>'
+        +'<div style="font-size:20px;font-weight:800;letter-spacing:-.4px;line-height:1.15">'+escHtml(top)+'</div>'
+      +'</div>'
+      +'<div style="text-align:right;flex-shrink:0">'
+        +'<div style="font-size:10px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">CA généré</div>'
+        +'<div style="font-size:22px;font-weight:800;color:var(--red);letter-spacing:-.4px;font-family:\'JetBrains Mono\',monospace">'+fmtEUR(perf[top])+'</div>'
+      +'</div>'
+    +'</div>';
+  }else{
+    // Carte épurée — pas de "" ni "_" ni "=>"
+    tp.innerHTML = '<div class="top-perf-empty">'
+      +'<div class="tpe-title">Aucun top performer</div>'
+      +'<div class="tpe-sub">Les performances de ce mois s\'afficheront ici</div>'
+    +'</div>';
+  }
+
+  renderCharts();
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 6.2 / 6.3 — CHARTS — Août 2025 → Juillet 2026, axe X rouge,
+   tooltips noires précises au centime près
+   ═══════════════════════════════════════════════════════════════════ */
+var chartBenefice=null, chartMontant=null;
+
+function getChartMonths(){
+  // Période FIXE strictement : août 2025 → juillet 2026 (12 mois)
+  var startY = 2025, startM = 7;
+  var months = [];
+  for(var i=0;i<12;i++){
+    var y = startY + Math.floor((startM + i)/12);
+    var m = (startM + i) % 12;
+    var d = new Date(y, m, 1);
+    months.push({
+      key: y+'-'+String(m+1).padStart(2,'0'),
+      label: d.toLocaleDateString('fr-FR',{month:'short',year:'2-digit'}),
+      y:y, m:m
+    });
+  }
+  return months;
+}
+
+function renderCharts(){
+  if(typeof Chart==='undefined') return;
+  var canvBen = document.getElementById('chartBenefice');
+  var canvMnt = document.getElementById('chartMontant');
+  if(!canvBen || !canvMnt) return;
+
+  var months = getChartMonths();
+  var labels = months.map(function(x){return x.label});
+  var keys   = months.map(function(x){return x.key});
+
+  // SECTION 2.2 — ARCHIVÉS comptés dans les graphiques
+  var allForChart = state.dossiers.concat(state.archived);
+
+  var benef={}, mont={};
+  keys.forEach(function(k){benef[k]=0; mont[k]=0});
+
+  allForChart.forEach(function(doc){
+    var dt = parseDate(doc['Date de commande']) || parseDate(doc.createdAt);
+    if(!dt) return;
+    var k = dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');
+    if(!(k in benef)) return;
+    var m = getMontant(doc);
+    // PHASE 3.5 — Méthode globale (Clientèle uniquement)
+    var fee = getMethodFee(doc._methodChoice);
+    mont[k] += m;
+    if(!isPerso(doc)){
+      benef[k] += Math.max(0, m*0.40 - fee);
+    }
+  });
+
+  var dark = document.body.getAttribute('data-theme')==='dark';
+  var grid = dark?'rgba(255,255,255,.06)':'rgba(0,0,0,.06)';
+  var tickCol = dark?'#98989d':'#6e6e73';
+
+  var yScale = {
+    grid:{color:grid, drawBorder:false},
+    border:{display:false},
+    ticks:{
+      color:tickCol,
+      font:{family:'Outfit',weight:'600',size:11},
+      stepSize:400,
+      autoSkip:false,
+      callback:function(v){return (v>=1000?(v/1000).toFixed(v%1000===0?0:1)+'k':v)+'€'}
+    },
+    min:0,
+    max:4000,
+    beginAtZero:true,
+    afterBuildTicks: function(axis){
+      axis.ticks = [0,400,800,1200,1600,2000,2400,2800,3200,3600,4000].map(function(v){return {value:v}});
+    }
+  };
+
+  // SECTION 6.2 — AXE X : ligne ROUGE ÉPAISSE en bas (les DEUX graphiques)
+  var xScale = {
+    grid:{display:false},
+    border:{display:true, color:'#E60000', width:3},   // ligne rouge horizontale épaisse
+    ticks:{color:tickCol, font:{family:'Outfit',weight:'600',size:11}}
+  };
+
+  // SECTION 6.3 — Tooltip noir élégant, point d'ancrage qui s'illumine,
+  // montants au centime près en format monétaire FR
+  var commonOpts = {
+    responsive:true, maintainAspectRatio:false,
+    interaction:{mode:'index', intersect:false},
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        enabled:true,
+        backgroundColor:'#000000',
+        titleColor:'#ffffff',
+        bodyColor:'#ffffff',
+        titleFont:{family:'Outfit',weight:'700',size:12},
+        bodyFont:{family:'JetBrains Mono',weight:'700',size:13},
+        padding:12,
+        cornerRadius:10,
+        displayColors:false,
+        borderColor:'rgba(255,255,255,.12)',
+        borderWidth:1,
+        callbacks:{
+          title:function(items){ return items[0].label; },
+          label:function(c){
+            // Format monétaire FR strict, centime près
+            var v = (c.parsed.y==null?0:c.parsed.y);
+            return ' '+v.toLocaleString('fr-FR',{
+              style:'currency',
+              currency:'EUR',
+              minimumFractionDigits:2,
+              maximumFractionDigits:2
+            });
+          }
+        }
+      }
+    },
+    scales:{ x:xScale, y:yScale }
+  };
+
+  // ───────── Graphique 1 : BÉNÉFICE NET ─────────
+  if(chartBenefice) chartBenefice.destroy();
+  var ctx1 = canvBen.getContext('2d');
+  var grad1 = ctx1.createLinearGradient(0,0,0,280);
+  grad1.addColorStop(0,'rgba(230,0,0,.28)'); grad1.addColorStop(1,'rgba(230,0,0,0)');
+  chartBenefice = new Chart(ctx1,{
+    type:'line',
+    data:{ labels:labels, datasets:[{
+      data: keys.map(function(k){return Math.round(benef[k]*100)/100}),
+      borderColor:'#E60000',
+      backgroundColor:grad1,
+      fill:true,
+      borderWidth:2.5,
+      tension:0.4,
+      pointRadius:4,
+      pointBackgroundColor:'#E60000',
+      pointBorderColor: dark?'#0a0a0a':'#fff',
+      pointBorderWidth:2,
+      pointHoverRadius:9,                      // s'illumine au survol
+      pointHoverBackgroundColor:'#ffffff',
+      pointHoverBorderColor:'#E60000',
+      pointHoverBorderWidth:3,
+      pointHitRadius:14
+    }]},
+    options: commonOpts
+  });
+
+  // ───────── Graphique 2 : MONTANT REMBOURSÉ ─────────
+  if(chartMontant) chartMontant.destroy();
+  var ctx2 = canvMnt.getContext('2d');
+  var grad2 = ctx2.createLinearGradient(0,0,0,280);
+  grad2.addColorStop(0,'rgba(230,0,0,.32)'); grad2.addColorStop(1,'rgba(230,0,0,0)');
+  chartMontant = new Chart(ctx2,{
+    type:'line',
+    data:{ labels:labels, datasets:[{
+      data: keys.map(function(k){return Math.round(mont[k]*100)/100}),
+      borderColor:'#E60000',
+      backgroundColor:grad2,
+      fill:true,
+      borderWidth:2.5,
+      tension:0.4,
+      pointRadius:4,
+      pointBackgroundColor:'#E60000',
+      pointBorderColor: dark?'#0a0a0a':'#fff',
+      pointBorderWidth:2,
+      pointHoverRadius:9,
+      pointHoverBackgroundColor:'#ffffff',
+      pointHoverBorderColor:'#E60000',
+      pointHoverBorderWidth:3,
+      pointHitRadius:14
+    }]},
+    options: commonOpts
+  });
+}
+
+function csvEsc(v){
+  if(v==null) return '';
+  var s = String(v);
+  if(s.toDate) s = s.toDate().toISOString();
+  if(s.indexOf(';')>=0 || s.indexOf('"')>=0 || s.indexOf('\n')>=0){
+    s = '"'+s.replace(/"/g,'""')+'"';
+  }
+  return s;
+}
+$('#btnExportCSV').addEventListener('click', function(){
+  var all = state.dossiers.concat(state.archived);
+  if(!all.length){ toast('Aucune donnée à exporter','err'); return; }
+  var cols = ['Référence dossier','Boutique','Nom sur commande','@Telegram','Articles','N° de commande','N° de suivi','E-mail commande','Date de commande','Livraison prévue','Devise','Montant total','_type','_stage','_badge','_lastRelance','_notes','archive','createdAt'];
+  var lines = [cols.join(';')];
+  all.forEach(function(d){
+    lines.push(cols.map(function(c){ return csvEsc(d[c]); }).join(';'));
+  });
+  var blob = new Blob(['\ufeff'+lines.join('\n')], {type:'text/csv;charset=utf-8;'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'commandes_'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  toast('CSV téléchargé','ok');
+  logEvent('EXPORT','CSV — '+all.length+' lignes');
+});
+
+/* ═══════════════════════════════════════════════════════════════════
+   SEARCH
+   ═══════════════════════════════════════════════════════════════════ */
+$('#spotlightInput').addEventListener('input', function(e){
+  state.searchQ = (e.target.value||'').toLowerCase().trim();
+  runSearch();
+});
+
+function runSearch(){
+  var q = state.searchQ;
+  var box = $('#searchResults');
+  if(!q){
+    box.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Tapez pour interroger toute la base</div>';
+    return;
+  }
+  var hits = state.dossiers.filter(function(d){
+    return Object.keys(d).some(function(k){
+      if(k==='_id') return false;
+      var v = d[k];
+      if(v && v.toDate) v = v.toDate().toISOString();
+      return String(v||'').toLowerCase().indexOf(q) >= 0;
+    });
+  });
+  if(!hits.length){
+    box.innerHTML = '<div class="empty-state" style="grid-column:1/-1">Aucun résultat pour <strong>"'+escHtml(q)+'"</strong></div>';
+    return;
+  }
+  box.innerHTML = hits.map(function(d){
+    return '<div class="result-card" data-id="'+d._id+'">'
+      +'<div class="rc-head">'
+        +logoBlock(d.Boutique,'sm')
+        +'<div><div class="rc-name">'+escHtml(d.Boutique||'—')+'<small>'+escHtml(d['Référence dossier']||d._id)+'</small></div></div>'
+        +'<div class="rc-amt">'+fmtEUR(getMontant(d))+'</div>'
+      +'</div>'
+      +'<div class="rc-meta">'
+        +'<strong>'+escHtml(d['Nom sur commande']||'—')+'</strong> · '+escHtml(d['@Telegram']||'')
+        +'<br>'+escHtml((d.Articles||'').toString().slice(0,80))+(((d.Articles||'').length>80)?'…':'')
+      +'</div>'
+    +'</div>';
+  }).join('');
+  $$('.result-card', box).forEach(function(c){
+    c.addEventListener('click', function(){
+      var id = c.dataset.id;
+      var navItem = $('.sb-nav-item[data-view="dossiers"]');
+      if(navItem) navItem.click();
+      setTimeout(function(){
+        var el = $('.dossier[data-id="'+id+'"]');
+        if(el){ el.classList.add('open'); el.scrollIntoView({behavior:'smooth',block:'center'}); }
+      }, 150);
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DOSSIERS
+   ═══════════════════════════════════════════════════════════════════ */
+$('#dossiersSearch').addEventListener('input', function(e){
+  state.dossierFilter = (e.target.value||'').toLowerCase().trim();
+  renderDossiers();
+});
+$('#btnCreateDossier').addEventListener('click', function(){
+  if(!FB_OK || !COL){ toast('Firebase indisponible','err'); return; }
+  var ref = 'FR'+String(Math.floor(10000+Math.random()*89999));
+  var newDoc = {
+    'Référence dossier': ref,
+    'Boutique': '',
+    'Nom sur commande': '',
+    '@Telegram': '',
+    'Articles': '',
+    'N° de commande': '',
+    'N° de suivi': '',
+    'E-mail commande': '',
+    'Date de commande': new Date().toISOString().slice(0,10),
+    'Livraison prévue': '',
+    'Devise': 'EUR',
+    'Montant total': 0,
+    '_stage': 0,
+    '_badge': '',
+    '_notes': '',
+    '_lastRelance': null,
+    '_methodChoice': '',
+    '_type': 'Pro',
+    'archive': false,
+    'createdAt': firebase.firestore.FieldValue.serverTimestamp()
+  };
+  COL.add(newDoc).then(function(ref2){
+    toast('Nouveau dossier créé : '+ref,'ok');
+    logEvent('CREATE','Dossier '+ref+' (#'+ref2.id.substring(0,6)+')');
+    setTimeout(function(){
+      var el = $('.dossier[data-id="'+ref2.id+'"]');
+      if(el){ el.classList.add('open'); el.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }, 400);
+  }).catch(function(err){
+    toast('Erreur : '+err.message,'err');
+  });
+});
+
+function getRelanceDays(d){
+  var lr = parseDate(d._lastRelance);
+  if(!lr) return null;
+  return Math.floor((Date.now()-lr.getTime())/(1000*60*60*24));
+}
+function isUrgent(d){
+  var days = getRelanceDays(d);
+  return (days!=null && days>3) || (d._lastRelance==null);
+}
+function updateRelanceBadge(){
+  var n = state.dossiers.filter(isUrgent).length;
+  var b = $('#navBadgeRelance');
+  if(!b) return;
+  if(n>0){ b.style.display='flex'; b.textContent = n; }
+  else b.style.display = 'none';
+}
+function updateArchiveBadge(){
+  var n = state.archived.length;
+  var b = $('#navBadgeArchive');
+  if(!b) return;
+  if(n>0){ b.style.display='flex'; b.textContent = n; }
+  else b.style.display = 'none';
+}
+
+function sortDossiers(arr){
+  var s = state.sortBy;
+  return arr.slice().sort(function(a,b){
+    if(s==='urgent'){
+      var ua = isUrgent(a)?1:0, ub = isUrgent(b)?1:0;
+      if(ua!==ub) return ub-ua;
+      var da = getRelanceDays(a), dbd = getRelanceDays(b);
+      return (dbd==null?9999:dbd) - (da==null?9999:da);
+    }
+    if(s==='recent'){
+      var ca = parseDate(a.createdAt) || parseDate(a['Date de commande']);
+      var cb = parseDate(b.createdAt) || parseDate(b['Date de commande']);
+      return (cb?cb.getTime():0) - (ca?ca.getTime():0);
+    }
+    if(s==='amount') return getMontant(b) - getMontant(a);
+    if(s==='name') return String(a.Boutique||'').localeCompare(String(b.Boutique||''));
+    return 0;
+  });
+}
+
+/* SECTION 2.3 — Vue Dossiers : ARCHIVÉS exclus de la liste */
+function renderDossiers(){
+  var list = $('#dossierList');
+  if(!list) return;
+  // Cleanup flatpickr instances précédentes pour cette zone
+  destroyFlatpickrIn(list);
+
+  var q = state.dossierFilter;
+  var arr = state.dossiers.filter(function(d){    // dossiers actifs UNIQUEMENT
+    if(!q) return true;
+    return ['Boutique','Référence dossier','Nom sur commande','@Telegram','N° de commande'].some(function(k){
+      return String(d[k]||'').toLowerCase().indexOf(q)>=0;
+    });
+  });
+  arr = sortDossiers(arr);
+  if(!arr.length){
+    list.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>Aucun dossier</div>';
+    return;
+  }
+  list.innerHTML = arr.map(function(d){return renderDossierHTML(d,false)}).join('');
+  bindDossierEvents(list, false);
+  initFlatpickrInScope(list);
+  initBoutiqueDropdownsInScope(list);
+  initMethodDropdownsInScope(list);
+}
+
+function renderArchives(){
+  var list = $('#archiveList');
+  if(!list) return;
+  destroyFlatpickrIn(list);
+  if(!state.archived.length){
+    list.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/></svg>Aucun dossier archivé</div>';
+    return;
+  }
+  var arr = state.archived.slice().sort(function(a,b){
+    var ca = parseDate(a.createdAt)||0, cb = parseDate(b.createdAt)||0;
+    return (cb?cb.getTime():0) - (ca?ca.getTime():0);
+  });
+  list.innerHTML = arr.map(function(d){return renderDossierHTML(d,true)}).join('');
+  bindDossierEvents(list, true);
+  // Pas de flatpickr en archives (champs en lecture)
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PHASE 1-5 — RENDU D'UN DOSSIER (RECONSTRUCTION INTÉGRALE)
+   - PHASE 1 : Vue liste compacte = grid 6 colonnes [Logo|Réf|N°Suivi|Client|Statut+rond|Chevron]
+   - PHASE 2 : Grid stricte 2×5 (10 champs) + bloc 50/50 Articles/Notes
+   - PHASE 3 : Type + Dernière Relance côte à côte (50/50) + Méthode (Custom Dropdown global)
+   - PHASE 4 : 4 boutons footer + Copier Dossier au format strict
+   - PHASE 5 : Petits ronds de couleur (statut) + nettoyage HTML
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* PHASE 3.4 — Méthodes de remboursement GLOBALES (toutes boutiques)
+   FTID 25€ · EB & DNA 0€ · LIT 25€ · DNA PR 45€ · Sans frais 0€
+*/
+var METHODES_REMBOURSEMENT = [
+  {value:'FTID',       label:'FTID (25,00€)',       fee:25},
+  {value:'EB & DNA',   label:'EB & DNA (0,00€)',    fee:0},
+  {value:'LIT',        label:'LIT (25,00€)',        fee:25},
+  {value:'DNA PR',     label:'DNA PR (45,00€)',     fee:45},
+  {value:'Sans frais', label:'Sans frais (0,00€)',  fee:0}
+];
+function getMethodFee(methodValue){
+  if(!methodValue) return 0;
+  for(var i=0;i<METHODES_REMBOURSEMENT.length;i++){
+    if(METHODES_REMBOURSEMENT[i].value === methodValue) return METHODES_REMBOURSEMENT[i].fee;
+  }
+  return 0;
+}
+
+function renderDossierHTML(d, isArchived){
+  var stage = parseInt(d._stage)||0;
+  var badge = d._badge||'';
+  var type = d._type==='Personnel'?'Personnel':'Pro';
+  var urgent = !isArchived && isUrgent(d);
+
+  // Mini badges intégrés dans la cellule client
+  var miniBadgeHTML = '';
+  if(badge) miniBadgeHTML += '<span class="mini-badge '+(badge==='VIP'?'vip':badge==='COMPLIQUÉ'?'hot':'safe')+'">'+escHtml(badge)+'</span>';
+  if(type==='Personnel') miniBadgeHTML += '<span class="mini-badge perso">Perso</span>';
+
+  // Méthode (PHASE 3.4) — globale, plus aucune dépendance à shop.multiMethod
+  var methodChoice = d._methodChoice||'';
+  var methodFee = getMethodFee(methodChoice);
+  var feeBadge = '';
+  if(type==='Personnel'){
+    feeBadge = '<span class="fee-badge perso">Dossier personnel — bénéfice 0€</span>';
+  } else if(methodChoice){
+    if(methodFee > 0){
+      feeBadge = '<span class="fee-badge">− '+methodFee.toFixed(2).replace('.',',')+'€ de frais ('+escHtml(methodChoice)+')</span>';
+    } else {
+      feeBadge = '<span class="fee-badge ok">'+escHtml(methodChoice)+' · sans frais</span>';
+    }
+  }
+
+  /* PHASE 5.2 — STEPPER avec petits ronds de couleur */
+  /* FIX BARRE DE PROGRESSION : la zone utile va de left:10% à right:10%
+     du stepper (80% de largeur). Avec 4 transitions entre 5 ronds, chaque
+     stage couvre 20% de la zone utile, soit width = stage*20 (% du stepper).
+     Cela garantit que la barre s'arrête PILE sur le rond correspondant et
+     ne dépasse JAMAIS le dernier rond ("Commission Payée"). */
+  var progressW = stage * 20;
+  var progressColors = ['#8e8e93','#FF9500','#FFCC00','#7ED957','#2E8B2E'];
+  var progressColor = progressColors[stage];
+  var stepper = '<div class="stepper" data-current-stage="'+stage+'">'
+    +'<div class="stepper-progress" style="width:'+progressW+'%;background:'+progressColor+'"></div>'
+    +STAGES.map(function(s){
+        var st = '';
+        if(s.key < stage) st = 'completed';
+        else if(s.key === stage) st = 'active';
+        var col = (s.key <= stage) ? stage : s.key;
+        return '<button type="button" class="step-item '+st+'" data-stage="'+s.key+'" data-color="'+col+'">'
+          +'<span class="step-dot"></span>'
+          +'<span class="step-label">'+escHtml(s.label)+'</span>'
+        +'</button>';
+      }).join('')
+    +'</div>';
+
+  /* ───────── PHASE 2.1 / 2.2 — GRILLE STRICTE 2 LIGNES × 5 COLONNES (10 champs) ─────────
+     Ligne 1 : Référence Dossier · Nom de la commande · Telegram · N° de Commande · Montant Total
+     Ligne 2 : Livraison prévue · Date de Commande · Email de Commande · Numéro de suivi · Articles
+  */
+  var GRID_FIELDS = [
+    // Ligne 1
+    {k:'Référence dossier', t:'text',   label:'Référence Dossier'},
+    {k:'Nom sur commande',  t:'text',   label:'Nom de la commande'},
+    {k:'@Telegram',         t:'text',   label:'Telegram'},
+    {k:'N° de commande',    t:'text',   label:'Numéro de Commande'},
+    {k:'Montant total',     t:'number', label:'Montant Total'},
+    // Ligne 2
+    {k:'Livraison prévue',  t:'date',   label:'Livraison prévue'},
+    {k:'Date de commande',  t:'date',   label:'Date de Commande'},
+    {k:'E-mail commande',   t:'email',  label:'Email de Commande'},
+    {k:'N° de suivi',       t:'text',   label:'Numéro de suivi'},
+    {k:'Articles',          t:'text',   label:'Articles'}
+  ];
+  var fHTML = GRID_FIELDS.map(function(f){
+    var k = f.k, t = f.t;
+    var val = d[k];
+    if(val && val.toDate) val = val.toDate().toISOString().slice(0,10);
+    if(t==='date' && val){ var p = parseDate(val); if(p) val = p.toISOString().slice(0,10); }
+    var inp;
+    if(t==='date'){
+      inp = '<input type="text" class="field-input fp-input" '
+          + 'data-flatpickr="1" '
+          + 'data-key="'+escHtml(k)+'" '
+          + 'value="'+escHtml(val==null?'':val)+'" '
+          + 'placeholder="JJ/MM/AAAA" readonly>';
+    } else if(t==='number'){
+      inp = '<input type="number" step="0.01" min="0" class="field-input" data-key="'+escHtml(k)+'" value="'+escHtml(val==null?'':val)+'">';
+    } else {
+      inp = '<input type="'+t+'" class="field-input" data-key="'+escHtml(k)+'" value="'+escHtml(val==null?'':val)+'">';
+    }
+    return '<div class="field-row"><span class="field-label">'+escHtml(f.label)+'</span>'+inp+'</div>';
+  }).join('');
+
+  /* PHASE 5.1 — Boutique : custom dropdown PROPRE (pas de symboles parasites) */
+  var boutiqueCell =
+    '<div class="field-row" style="grid-column:1/-1">'
+      +'<span class="field-label">Boutique</span>'
+      +'<div class="cdd-mount" data-cdd-type="boutique" data-current="'+escHtml(d.Boutique||'')+'"></div>'
+    +'</div>';
+
+  /* PHASE 3.4 — Méthode de remboursement (custom dropdown global) */
+  var methodPickerHTML =
+    '<div class="field-cell">'
+      +'<span class="field-label">Méthode de remboursement</span>'
+      +'<div class="cdd-mount" data-cdd-type="method-global" data-current="'+escHtml(methodChoice)+'"></div>'
+    +'</div>';
+
+  var notesVal = d._notes||'';
+  if(notesVal && notesVal.toDate) notesVal = notesVal.toDate().toISOString();
+  var articlesVal = d.Articles||'';
+  if(articlesVal && articlesVal.toDate) articlesVal = articlesVal.toDate().toISOString();
+
+  /* Champ Dernière relance (flatpickr) */
+  var lastRelVal = '';
+  if(d._lastRelance){
+    var pR = parseDate(d._lastRelance);
+    if(pR) lastRelVal = pR.toISOString().slice(0,10);
+  }
+
+  /* PHASE 4.1 — 4 BOUTONS FOOTER (largeur strictement équivalente, grid 4 cols) */
+  var actionButtons;
+  if(isArchived){
+    actionButtons = '<div class="db-block actions-footer archived-mode">'
+      +'<button class="btn btn-restore" data-act="restore"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Restaurer</button>'
+      +'<button class="btn btn-delete" data-act="deletehard"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>Supprimer définitivement</button>'
+      +'<button class="btn btn-copy" data-act="copyall"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copier Dossier</button>'
+    +'</div>';
+  } else {
+    actionButtons = '<div class="db-block actions-footer">'
+      +'<button class="btn btn-save" data-act="save"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Sauvegarder</button>'
+      +'<button class="btn btn-tg" data-act="telegram"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Contacter Telegram</button>'
+      +'<button class="btn btn-copy" data-act="copyall"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copier Dossier</button>'
+      +'<button class="btn btn-archive" data-act="archive"><svg viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>Archiver</button>'
+    +'</div>';
+  }
+
+  /* ───────── PHASE 1.2 / 1.3 / 1.4 — BARRE HORIZONTALE COMPACTE ─────────
+     Grid 6 colonnes : [Logo Boutique | Réf | N°Suivi | Client | Statut(rond+label) | Chevron]
+     PHASE 5.1 — Aucun symbole parasite : utilisation de placeholder propres
+  */
+  var refTxt    = (d['Référence dossier']||'').trim() || (d._id||'').substring(0,8).toUpperCase();
+  var suiviTxt  = (d['N° de suivi']||'').trim();
+  var clientTxt = (d['Nom sur commande']||'').trim();
+  var stageObj  = STAGES[stage] || STAGES[0];
+
+  var headHTML =
+    '<div class="dossier-head">'
+      +'<div class="dh-cell dh-cell-logo">'+logoBlock(d.Boutique)+'</div>'
+      +'<div class="dh-cell" title="'+escHtml(refTxt)+'">'
+        +'<span class="dh-ref">'+escHtml(refTxt)+'</span>'
+      +'</div>'
+      +'<div class="dh-cell dh-suivi-cell">'
+        +(suiviTxt
+          ? '<span class="dh-suivi" title="'+escHtml(suiviTxt)+'">'+escHtml(suiviTxt)+'</span>'
+          : '<span class="dh-suivi empty">Pas de suivi</span>')
+      +'</div>'
+      +'<div class="dh-cell dh-cell-client">'
+        +(clientTxt
+          ? '<span class="dh-client" title="'+escHtml(clientTxt)+'">'+escHtml(clientTxt)+'</span>'
+          : '<span class="dh-client empty">Sans nom</span>')
+        +miniBadgeHTML
+      +'</div>'
+      +'<div class="dh-cell dh-status" data-color="'+stage+'">'
+        +'<span class="status-dot"></span>'
+        +'<span class="status-label">'+escHtml(stageObj.label)+'</span>'
+      +'</div>'
+      // PHASE 1.4 — chevron tout à fait à droite, rotation 180° à l'ouverture
+      +'<div class="dh-chev"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>'
+    +'</div>';
+
+  /* ───────── BODY (intérieur du dossier) ───────── */
+  return '<div class="dossier '+(urgent?'urgent ':'')+(isArchived?'archived':'')+'" data-id="'+d._id+'">'
+    + headHTML
+    +'<div class="dossier-body">'
+
+      /* PHASE 3.1 / 3.2 / 3.3 — En haut : Type + Dernière Relance côte à côte 50/50 */
+      +'<div class="db-block top-row">'
+        +'<div class="field-cell">'
+          +'<span class="field-label">Type de dossier</span>'
+          +'<div class="type-segmented">'
+            +'<button type="button" data-type="Pro" class="'+(type==='Pro'?'active':'')+'">Clientèle</button>'
+            +'<button type="button" data-type="Personnel" class="'+(type==='Personnel'?'active':'')+'">Personnel</button>'
+          +'</div>'
+        +'</div>'
+        +'<div class="field-cell">'
+          +'<span class="field-label">Dernière Relance</span>'
+          +'<input type="text" class="field-input fp-input" data-flatpickr="1" data-key="_lastRelance" '
+          +'value="'+escHtml(lastRelVal)+'" placeholder="JJ/MM/AAAA" readonly>'
+        +'</div>'
+      +'</div>'
+
+      /* Avancement : stepper + badge frais + Méthode */
+      +'<div class="db-block">'
+        +'<div class="subsection-title">Avancement</div>'
+        + stepper
+        +(feeBadge?'<div class="fee-line-inline">'+feeBadge+'</div>':'')
+      +'</div>'
+
+      /* PHASE 3.4 — Méthode de remboursement (Custom Dropdown global) + Boutique */
+      +'<div class="db-block">'
+        +'<div class="subsection-title">Boutique & Méthode</div>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:end">'
+          +'<div class="field-cell">'
+            +'<span class="field-label">Boutique</span>'
+            +'<div class="cdd-mount" data-cdd-type="boutique" data-current="'+escHtml(d.Boutique||'')+'"></div>'
+          +'</div>'
+          + methodPickerHTML
+        +'</div>'
+      +'</div>'
+
+      /* PHASE 2.1 / 2.2 — GRILLE STRICTE 2 LIGNES × 5 COLONNES (10 champs) */
+      +'<div class="db-block">'
+        +'<div class="subsection-title">Informations principales</div>'
+        +'<div class="fields-grid-strict">'
+          + fHTML
+        +'</div>'
+      +'</div>'
+
+      /* PHASE 2.3 — Bloc 50/50 : Articles | Notes (rows=2 max par défaut) */
+      +'<div class="db-block split-block">'
+        +'<div>'
+          +'<div class="subsection-title">Articles Concernés</div>'
+          +'<textarea class="field-textarea-2" data-key="Articles" rows="2" placeholder="Liste des articles concernés…">'+escHtml(articlesVal)+'</textarea>'
+        +'</div>'
+        +'<div>'
+          +'<div class="subsection-title">Notes Internes</div>'
+          +'<textarea class="field-textarea-2" data-key="_notes" rows="2" placeholder="Notes internes — historique, points d\'attention, contexte…">'+escHtml(notesVal)+'</textarea>'
+        +'</div>'
+      +'</div>'
+
+      + actionButtons
+
+      +'<div class="dirty-indicator">Modifications non enregistrées · cliquez sur <strong>Sauvegarder</strong></div>'
+
+    +'</div>'
+  +'</div>';
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 4 — FLATPICKR : init de toutes les inputs .fp-input
+   - minDate Juin 2025 pour "Date de commande" uniquement (4.4)
+   - Locale FR, format dd/mm/yyyy en affichage, ISO en stockage
+   ═══════════════════════════════════════════════════════════════════ */
+function destroyFlatpickrIn(scope){
+  if(!scope) return;
+  state.flatpickrInstances = state.flatpickrInstances.filter(function(inst){
+    try {
+      if(inst && inst.element && (scope === inst.element || scope.contains(inst.element))){
+        inst.destroy();
+        return false;
+      }
+    } catch(e){}
+    return true;
+  });
+}
+
+function initFlatpickrInScope(scope){
+  if(typeof flatpickr === 'undefined') return;
+  if(!scope) scope = document;
+  var inputs = $$('input.fp-input[data-flatpickr="1"]', scope);
+  inputs.forEach(function(inp){
+    var key = inp.dataset.key;
+    var opts = {
+      dateFormat:'Y-m-d',                  // valeur stockée (ISO)
+      altInput:true,
+      altFormat:'d/m/Y',                   // affichage utilisateur (FR)
+      allowInput:false,
+      /* ─────────────────────────────────────────────────────────────
+         FIX CALENDRIER — Onglet "RELANCES & DOSSIERS"
+         Inputs : "Dernière relance", "Date de commande", "Livraison prévue".
+         On garde le design Flatpickr mais SANS le menu déroulant du mois.
+         Le mois s'affiche en texte simple ; navigation uniquement via < >.
+         ───────────────────────────────────────────────────────────── */
+      monthSelectorType: 'static',
+      locale: (flatpickr.l10ns && flatpickr.l10ns.fr) ? flatpickr.l10ns.fr : 'default',
+      disableMobile:true,                  // force le calendrier custom (PAS le natif iOS/Android)
+      onChange: function(_d, _s, fpInst){
+        // Marque dirty
+        var dossierEl = inp.closest('.dossier');
+        if(dossierEl) markDirty(dossierEl);
+      }
+    };
+    // SECTION 4.4 — minDate Juin 2025 pour Date de commande
+    if(key === 'Date de commande'){
+      opts.minDate = '2025-06-01';
+    }
+    var fp = flatpickr(inp, opts);
+    state.flatpickrInstances.push(fp);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Init des CUSTOM DROPDOWNS (boutique + méthode) dans un dossier
+   ═══════════════════════════════════════════════════════════════════ */
+function initBoutiqueDropdownsInScope(scope){
+  if(!scope) return;
+  $$('.cdd-mount[data-cdd-type="boutique"]', scope).forEach(function(mount){
+    var current = mount.dataset.current || '';
+    var dossierEl = mount.closest('.dossier');
+    // PHASE 5.1 — placeholder propre (pas de symboles parasites du type "> ou orphelins)
+    var opts = [{value:'', label:'Aucune boutique'}].concat(SHOPS.map(function(sh){
+      return {value: sh.name, label: sh.name};
+    }));
+    createCustomDropdown({
+      mountEl: mount,
+      options: opts,
+      selected: current,
+      placeholder:'— Choisir une boutique —',
+      withLogos: true,
+      onChange: function(v){
+        mount.dataset.current = v;
+        // Mettre à jour le logo de la barre d'en-tête en temps réel
+        if(dossierEl){
+          markDirty(dossierEl);
+          var headLogoCell = $('.dossier-head .dh-cell-logo', dossierEl);
+          if(headLogoCell){
+            headLogoCell.innerHTML = logoBlock(v);
+          }
+        }
+      }
+    });
+  });
+}
+function initMethodDropdownsInScope(scope){
+  if(!scope) return;
+  // PHASE 3.4 — Méthode GLOBALE (toutes boutiques)
+  $$('.cdd-mount[data-cdd-type="method-global"]', scope).forEach(function(mount){
+    var current = mount.dataset.current || '';
+    var dossierEl = mount.closest('.dossier');
+    var opts = [{value:'', label:'— Choisir —'}].concat(METHODES_REMBOURSEMENT.map(function(m){
+      return {value: m.value, label: m.label};
+    }));
+    createCustomDropdown({
+      mountEl: mount,
+      options: opts,
+      selected: current,
+      placeholder:'— Choisir une méthode —',
+      withLogos: false,
+      onChange: function(v){
+        mount.dataset.current = v;
+        if(dossierEl){
+          markDirty(dossierEl);
+          // Mise à jour visuelle live du badge frais
+          updateFeeBadgeLive(dossierEl);
+        }
+      }
+    });
+  });
+}
+
+/* PHASE 3.5 — Mise à jour live du badge frais quand la méthode change */
+function updateFeeBadgeLive(dossierEl){
+  if(!dossierEl) return;
+  var methMount = $('.cdd-mount[data-cdd-type="method-global"]', dossierEl);
+  var typeBtn = $('.type-segmented button.active', dossierEl);
+  var type = typeBtn ? typeBtn.dataset.type : 'Pro';
+  var method = methMount ? (methMount.dataset.current||'') : '';
+  var fee = getMethodFee(method);
+  var feeLine = $('.fee-line-inline', dossierEl);
+  var html = '';
+  if(type === 'Personnel'){
+    html = '<span class="fee-badge perso">Dossier personnel — bénéfice 0€</span>';
+  } else if(method){
+    if(fee > 0){
+      html = '<span class="fee-badge">− '+fee.toFixed(2).replace('.',',')+'€ de frais ('+escHtml(method)+')</span>';
+    } else {
+      html = '<span class="fee-badge ok">'+escHtml(method)+' · sans frais</span>';
+    }
+  }
+  if(feeLine){
+    if(html){
+      feeLine.innerHTML = html;
+      feeLine.style.display = 'flex';
+    } else {
+      feeLine.innerHTML = '';
+      feeLine.style.display = 'none';
+    }
+  } else if(html){
+    // Créer la ligne si elle n'existe pas
+    var stepper = $('.stepper', dossierEl);
+    if(stepper){
+      var newLine = document.createElement('div');
+      newLine.className = 'fee-line-inline';
+      newLine.innerHTML = html;
+      stepper.parentNode.insertBefore(newLine, stepper.nextSibling);
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ÉVÉNEMENTS DOSSIER — accordéon, stepper, type, save…
+   ═══════════════════════════════════════════════════════════════════ */
+function bindDossierEvents(scope, isArchived){
+  $$('.dossier', scope).forEach(function(el){
+    var id = el.dataset.id;
+
+    // PHASE 1.4 — Accordéon : clic sur la barre déroule fluidement
+    // FIX BUG : l'event listener est attaché à .dossier-head, qui est désormais
+    // un conteneur grid STABLE et VERROUILLÉ. Sa structure interne ne peut plus
+    // être détruite par l'injection de logo (cf. logoBlock). Le clic est donc
+    // toujours reçu, peu importe la boutique sélectionnée.
+    var head = $('.dossier-head', el);
+    if(head){
+      head.addEventListener('click', function(e){
+        // Ignore les clics sur des éléments interactifs internes
+        if(e.target.closest('button')) return;
+        if(e.target.closest('input,textarea,select,a')) return;
+        if(e.target.closest('.cdd')) return;
+        el.classList.toggle('open');
+      });
+    }
+
+    if(!isArchived){
+      // STEPPER — synchronise aussi le petit rond de couleur dans la barre
+      $$('.step-item', el).forEach(function(s){
+        s.addEventListener('click', function(){
+          var st = parseInt(s.dataset.stage);
+          var stepper = $('.stepper', el);
+          if(!stepper) return;
+          $$('.step-item', el).forEach(function(x){
+            var k = parseInt(x.dataset.stage);
+            x.classList.remove('active','completed');
+            if(k < st) x.classList.add('completed');
+            else if(k === st) x.classList.add('active');
+            x.dataset.color = (k <= st) ? st : k;
+          });
+          var bar = $('.stepper-progress', el);
+          var colors = ['#8e8e93','#FF9500','#FFCC00','#7ED957','#2E8B2E'];
+          if(bar){
+            /* FIX BARRE DE PROGRESSION : 20% par stage (et non 25%) pour
+               que la ligne s'arrête pile sur le rond, sans débordement
+               après "Commission Payée". */
+            bar.style.width = (st*20)+'%';
+            bar.style.background = colors[st];
+          }
+          stepper.dataset.currentStage = st;
+          el.dataset.pendingStage = st;
+          // PHASE 5.2 — Mise à jour live du rond de statut dans la barre
+          var statusCell = $('.dh-status', el);
+          if(statusCell){
+            statusCell.dataset.color = st;
+            var lbl = $('.status-label', statusCell);
+            if(lbl) lbl.textContent = (STAGES[st]||STAGES[0]).label;
+          }
+          markDirty(el);
+        });
+      });
+
+      // PHASE 3.1 — Type toggle (nouvelle classe .type-segmented)
+      $$('.type-segmented button', el).forEach(function(b){
+        b.addEventListener('click', function(){
+          var t = b.dataset.type;
+          $$('.type-segmented button', el).forEach(function(x){x.classList.remove('active')});
+          b.classList.add('active');
+          el.dataset.pendingType = t;
+          markDirty(el);
+          // Mise à jour live du badge frais
+          updateFeeBadgeLive(el);
+        });
+      });
+
+      // Tous inputs/textarea : marquent dirty
+      $$('input,textarea', el).forEach(function(inp){
+        if(inp.closest('.dossier-head')) return;
+        inp.addEventListener('input', function(){ markDirty(el); });
+        inp.addEventListener('change', function(){ markDirty(el); });
+      });
+    }
+
+    // Actions footer
+    $$('[data-act]', el).forEach(function(b){
+      b.addEventListener('click', function(){
+        var act = b.dataset.act;
+        if(act==='save') saveDossier(id, el);
+        if(act==='telegram') openTelegramDeepLink(id);
+        if(act==='copyall') copyAll(id);
+        if(act==='archive') confirmArchive(id);
+        if(act==='restore') restoreDossier(id);
+        if(act==='deletehard') confirmHardDelete(id);
+      });
+    });
+  });
+}
+
+function markDirty(el){
+  if(!el.classList.contains('dirty')){
+    el.classList.add('dirty');
+  }
+}
+
+/* SAVE — récupère aussi les valeurs des custom dropdowns */
+function saveDossier(id, el){
+  if(!FB_OK || !COL){ toast('Firebase indisponible','err'); return; }
+  var patch = {};
+  // Inputs / textareas
+  $$('input[data-key],textarea[data-key]', el).forEach(function(inp){
+    if(inp.closest('.dossier-head')) return;
+    var k = inp.dataset.key;
+    var v = inp.value;
+    if(inp.type==='number') v = (v===''?null:parseFloat(v));
+    if(inp.type==='date' || inp.classList.contains('fp-input')) v = (v||null);
+    patch[k] = v;
+  });
+  // Custom dropdowns
+  $$('.cdd-mount', el).forEach(function(mount){
+    var t = mount.dataset.cddType;
+    var v = mount.dataset.current || '';
+    if(t === 'boutique') patch['Boutique'] = v;
+    else if(t === 'method' || t === 'method-global') patch['_methodChoice'] = v;
+  });
+  if(el.dataset.pendingStage !== undefined){
+    patch._stage = parseInt(el.dataset.pendingStage)||0;
+  }
+  if(el.dataset.pendingType !== undefined){
+    patch._type = el.dataset.pendingType;
+  }
+  COL.doc(id).update(patch).then(function(){
+    toast('Dossier sauvegardé','ok');
+    logEvent('SAVE','#'+id.substring(0,6)+' — '+Object.keys(patch).length+' champs');
+    el.classList.remove('dirty');
+    delete el.dataset.pendingStage;
+    delete el.dataset.pendingType;
+  }).catch(function(err){
+    toast('Erreur : '+err.message,'err');
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TELEGRAM — Deep Link
+   ═══════════════════════════════════════════════════════════════════ */
+function openTelegramDeepLink(id){
+  var d = state.dossiers.filter(function(x){return x._id===id})[0]
+       || state.archived.filter(function(x){return x._id===id})[0];
+  if(!d) return;
+  var raw = (d['@Telegram']||'').toString().trim();
+  if(!raw){
+    toast('Aucun pseudo Telegram renseigné','err');
+    return;
+  }
+  var pseudo = raw
+    .replace(/^https?:\/\/(t\.me|telegram\.me)\//i,'')
+    .replace(/^@+/, '')
+    .replace(/\s+/g,'')
+    .replace(/\/+$/,'');
+  if(!pseudo){
+    toast('Pseudo Telegram invalide','err');
+    return;
+  }
+  var nom = d['Nom sur commande']||'';
+  var boutique = d.Boutique||'';
+  var montant = fmtEUR(getMontant(d));
+  var msg = 'Salut '+nom+', je reviens vers toi pour ton dossier '+boutique+' ('+montant+'). On avance bien ✅ je te tiens au courant dès la prochaine étape.';
+  var url = 'https://t.me/'+encodeURIComponent(pseudo)+'?text='+encodeURIComponent(msg);
+  window.open(url, '_blank', 'noopener,noreferrer');
+  logEvent('TG','Deep link → @'+pseudo);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PHASE 4.2 — COPIER DOSSIER : format STRICT
+   N'inclut PAS les notes internes ni la méthode.
+   ═══════════════════════════════════════════════════════════════════ */
+function copyAll(id){
+  var d = state.dossiers.filter(function(x){return x._id===id})[0]
+       || state.archived.filter(function(x){return x._id===id})[0];
+  if(!d) return;
+
+  // Helpers d'affichage : "****" si vide, sinon la valeur formatée
+  function v(val){
+    if(val == null) return '****';
+    if(val.toDate){ try{ val = val.toDate(); }catch(_){ } }
+    if(val instanceof Date){
+      if(isNaN(val.getTime())) return '****';
+      return val.toLocaleDateString('fr-FR');
+    }
+    var s = String(val).trim();
+    return s ? s : '****';
+  }
+  function vDate(val){
+    if(val == null || val === '') return '****';
+    var p = parseDate(val);
+    return p ? p.toLocaleDateString('fr-FR') : '****';
+  }
+  function vMoney(val){
+    var n = parseFloat(val);
+    if(isNaN(n) || n === 0) return '****';
+    return n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+'€';
+  }
+  function vTelegram(val){
+    if(val == null) return '****';
+    var s = String(val).trim();
+    if(!s) return '****';
+    return s.charAt(0) === '@' ? s : '@'+s;
+  }
+  function vType(t){
+    if(t === 'Personnel') return 'Personnel';
+    if(t === 'Pro') return 'Clientèle';
+    return '****';
+  }
+  function vStage(stage){
+    var n = parseInt(stage);
+    if(isNaN(n)) return '****';
+    var st = STAGES[n];
+    return st ? st.label : '****';
+  }
+
+  // Format demandé par la PHASE 4.2 — exactement ces 13 lignes
+  var lines = [
+    'Type de dossier : ' + vType(d._type),
+    'Dernière relance : ' + vDate(d._lastRelance),
+    'Avancement : ' + vStage(d._stage),
+    'Boutique : ' + v(d.Boutique) + ' > Reference : ' + v(d['Référence dossier']),
+    'Nom commande : ' + v(d['Nom sur commande']),
+    '@telegram : ' + vTelegram(d['@Telegram']),
+    'N•Commande : ' + v(d['N° de commande']),
+    'N•Suivi : ' + v(d['N° de suivi']),
+    'Email commande : ' + v(d['E-mail commande']),
+    'Date commande : ' + vDate(d['Date de commande']),
+    'Livraison : ' + vDate(d['Livraison prévue']),
+    'Montant TTC : ' + vMoney(d['Montant total']),
+    'Articles : ' + v(d.Articles)
+  ];
+
+  var txt = lines.join('\n');
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){
+      toast('Dossier copié','ok');
+      logEvent('COPY','Dossier #'+id.substring(0,6));
+    }).catch(function(){
+      // Fallback
+      copyFallback(txt);
+    });
+  } else {
+    copyFallback(txt);
+  }
+  function copyFallback(t){
+    var ta = document.createElement('textarea');
+    ta.value = t; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); toast('Dossier copié','ok'); }
+    catch(e){ toast('Copie impossible : '+e.message,'err'); }
+    ta.remove();
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 2.1 — SOFT DELETE — modale d'archivage
+   Texte central EXACT : "Archiver le dossier <strong>[REF]</strong> ?"
+   Sous-ligne : "Le dossier sera placé dans Archives."
+   ═══════════════════════════════════════════════════════════════════ */
+function confirmArchive(id){
+  var d = state.dossiers.filter(function(x){return x._id===id})[0];
+  if(!d) return;
+  var ref = d['Référence dossier']||id.substring(0,8);
+  // RÉGRESSION RÉPARÉE : on ne touche pas #confirmRef avant d'écraser
+  // #confirmMain ; l'ancien code faisait $('#confirmRef').textContent = ref
+  // mais après l'ajout du Hard Delete (qui réécrit #confirmMain SANS le span
+  // id="confirmRef"), cet appel plantait avec "Cannot set property textContent
+  // of null" et empêchait l'ouverture de la modale d'archivage.
+  $('#confirmMain').innerHTML = 'Archiver le dossier <span class="ref-strong" id="confirmRef">'+escHtml(ref)+'</span> ?';
+  $('#confirmSub').textContent = 'Le dossier sera placé dans Archives.';
+  $('#confirmOk').textContent = 'Archiver';
+  $('#confirmOverlay').classList.add('show');
+
+  // Reset du listener pour éviter les doubles bind
+  var ok = $('#confirmOk');
+  var newOk = ok.cloneNode(true);
+  ok.parentNode.replaceChild(newOk, ok);
+  newOk.addEventListener('click', function(){
+    if(!FB_OK || !COL){ toast('Firebase indisponible','err'); return; }
+    // Soft delete : booléen archive:true en Firestore
+    COL.doc(id).update({
+      archive:true,
+      _archivedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function(){
+      toast('Dossier archivé','ok');
+      logEvent('ARCHIVE','#'+id.substring(0,6)+' — '+(d.Boutique||''),'warn');
+      $('#confirmOverlay').classList.remove('show');
+    }).catch(function(err){
+      toast('Erreur : '+err.message,'err');
+    });
+  });
+}
+
+function restoreDossier(id){
+  if(!FB_OK || !COL){ toast('Firebase indisponible','err'); return; }
+  COL.doc(id).update({archive:false}).then(function(){
+    toast('Dossier restauré','ok');
+    logEvent('RESTORE','#'+id.substring(0,6));
+  }).catch(function(err){
+    toast('Erreur : '+err.message,'err');
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 2 — HARD DELETE — Suppression DÉFINITIVE depuis Archives
+   ─────────────────────────────────────────────────────────────────
+   2.2 : COL.doc(id).delete() — efface réellement le document.
+   2.3 : Comme Firestore émet un onSnapshot après .delete(), le
+         document disparaît de state.archived ; renderDashboard()
+         (rappelé via renderAll dans le snapshot) recalcule donc
+         le CA, le Bénéfice Net et le total des commandes SANS ce
+         dossier. Aucune action manuelle de soustraction nécessaire.
+   ═══════════════════════════════════════════════════════════════════ */
+function confirmHardDelete(id){
+  var d = state.archived.filter(function(x){return x._id===id})[0]
+       || state.dossiers.filter(function(x){return x._id===id})[0];
+  if(!d) return;
+  var ref = d['Référence dossier']||id.substring(0,8);
+  $('#confirmMain').innerHTML = 'Supprimer définitivement le dossier <span class="ref-strong">'+escHtml(ref)+'</span> ?';
+  $('#confirmSub').textContent = 'Cette action est irréversible. Le dossier sera effacé de Firestore et retiré du Chiffre d\'affaires, du Bénéfice Net et du total des commandes.';
+  $('#confirmOk').textContent = 'Supprimer';
+  $('#confirmOverlay').classList.add('show');
+
+  // Reset du listener pour éviter les doubles bind
+  var ok = $('#confirmOk');
+  var newOk = ok.cloneNode(true);
+  ok.parentNode.replaceChild(newOk, ok);
+  newOk.addEventListener('click', function(){
+    if(!FB_OK || !COL){ toast('Firebase indisponible','err'); return; }
+    COL.doc(id).delete().then(function(){
+      toast('Dossier supprimé définitivement','ok');
+      logEvent('DELETE','#'+id.substring(0,6)+' — '+(d.Boutique||'')+' — '+fmtEUR(getMontant(d)),'warn');
+      $('#confirmOverlay').classList.remove('show');
+      // Le snapshot Firestore rechargera state.archived et state.dossiers,
+      // ce qui rappellera renderDashboard() → CA / Bénéfice / Total mis à jour.
+    }).catch(function(err){
+      toast('Erreur : '+err.message,'err');
+    });
+  });
+}
+
+$('#confirmCancel').addEventListener('click', function(){
+  $('#confirmOverlay').classList.remove('show');
+});
+$('#confirmOverlay').addEventListener('click', function(e){
+  if(e.target === this) this.classList.remove('show');
+});
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 8 — KB — CARTES en GRILLE avec tri visuel et animations
+   8.1 : grille de cartes (déjà côté CSS)
+   8.2 : boutiques 1 méthode EN HAUT, boutiques 2 méthodes EN BAS
+   8.3 : animations hover (lueur + bordure rouge tournante) — côté CSS
+   ─────────────────────────────────────────────────────────────────
+   SECTION 3 — Filtrage temps réel : recherche par nom, pilules de
+   catégorie, délai (<7/14/30/60j), prix min/max. Toute la logique
+   ci-dessous applique les filtres en place via state.kbFilters.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* État global des filtres KB — initialisé dans state{} ci-dessus */
+
+/* ═══════════════════════════════════════════════════════════════════
+   CORRECTION 4 — LOGIQUE DES FILTRES KB (Délai + Prix), version robuste
+   ─────────────────────────────────────────────────────────────────
+   Parser délai : extrait le MAX de la string s.delai.
+     "15 à 30 jours"   → 30
+     "60 à 120 jours"  → 120
+     "7-10j"           → 10
+     "Instantané"      → 0
+     "—" ou "" / null  → Number.POSITIVE_INFINITY (= jamais filtré)
+   ═══════════════════════════════════════════════════════════════════ */
+function parseDelaiMaxDays(delaiStr){
+  if(!delaiStr) return Number.POSITIVE_INFINITY;
+  var s = String(delaiStr).toLowerCase();
+  if(s.indexOf('instant') !== -1) return 0;
+  var matches = s.match(/\d+/g);
+  if(!matches || matches.length === 0) return Number.POSITIVE_INFINITY;
+  // Le dernier nombre est la borne MAX du délai (ex: "15 à 30" → 30)
+  var nums = matches.map(function(x){return parseInt(x,10)}).filter(function(x){return !isNaN(x)});
+  if(!nums.length) return Number.POSITIVE_INFINITY;
+  return Math.max.apply(null, nums);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FIX FILTRE PRIX — Onglet "BASE DE CONNAISSANCES"
+   ─────────────────────────────────────────────────────────────
+   EXCLUSION STRICTE : si l'utilisateur saisit Min=200 et Max=1000,
+   on n'affiche QUE les boutiques dont TOUTES les tranches (tiers)
+   ont à la fois leur min ≥ userMin ET leur max ≤ userMax.
+   Toute boutique exposant un montant hors fourchette est exclue.
+   Si l'utilisateur ne saisit qu'une borne, l'autre est ouverte
+   (-Inf ou +Inf), mais la borne saisie est appliquée strictement.
+   ═══════════════════════════════════════════════════════════════════ */
+function shopHasOverlappingTier(shop, userMin, userMax){
+  var tiers = shop.tiers || [];
+  if(!tiers.length) return false;
+  // Aucune saisie : on garde toutes les boutiques
+  if(userMin === null && userMax === null) return true;
+  var lo = (userMin === null) ? Number.NEGATIVE_INFINITY : userMin;
+  var hi = (userMax === null) ? Number.POSITIVE_INFINITY : userMax;
+  // STRICT : CHAQUE tranche doit être ENTIÈREMENT incluse dans [lo, hi].
+  // Dès qu'UNE seule tranche déborde, on rejette la boutique.
+  for(var i=0;i<tiers.length;i++){
+    var tMin = parseFloat(tiers[i].min);
+    var tMax = parseFloat(tiers[i].max);
+    if(isNaN(tMin)) tMin = 0;
+    if(isNaN(tMax)) tMax = Number.POSITIVE_INFINITY;
+    if(tMin < lo) return false;   // tranche déborde par le bas
+    if(tMax > hi) return false;   // tranche déborde par le haut
+  }
+  return true;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CORRECTION 4 — FILTRE PRINCIPAL
+   Combine recherche par nom, catégorie, délai max, prix min/max.
+   ═══════════════════════════════════════════════════════════════════ */
+function applyKbFilters(shop){
+  var f = state.kbFilters || {};
+
+  // 1) Recherche par nom (case-insensitive, substring)
+  if(f.search && String(f.search).length > 0){
+    var needle = String(f.search).toLowerCase().trim();
+    if(needle.length > 0){
+      var hay = String(shop.name||'').toLowerCase();
+      if(hay.indexOf(needle) === -1) return false;
+    }
+  }
+
+  // 2) Catégorie
+  if(f.category && f.category !== 'all'){
+    if((shop.categorie||'') !== f.category) return false;
+  }
+
+  // 3) Délai max : si "<30j" sélectionné, on garde shops dont délai max <= 30
+  if(f.delai && f.delai !== 'all'){
+    var threshold = parseInt(f.delai, 10);
+    if(!isNaN(threshold)){
+      var maxDays = parseDelaiMaxDays(shop.delai);
+      if(maxDays > threshold) return false;
+    }
+  }
+
+  // 4) Prix : chevauchement avec au moins une tranche du shop
+  var hasMin = (f.priceMin !== null && f.priceMin !== undefined && !isNaN(f.priceMin));
+  var hasMax = (f.priceMax !== null && f.priceMax !== undefined && !isNaN(f.priceMax));
+  if(hasMin || hasMax){
+    var uMin = hasMin ? parseFloat(f.priceMin) : null;
+    var uMax = hasMax ? parseFloat(f.priceMax) : null;
+    if(!shopHasOverlappingTier(shop, uMin, uMax)) return false;
+  }
+
+  return true;
+}
+
+function renderKB(){
+  var grid = $('#kbGrid');
+  if(!grid) return;
+
+  // SECTION 8.2 — Tri : 1 méthode en haut, 2 méthodes en bas
+  var sorted = SHOPS.slice().sort(function(a,b){
+    var na = (a.tiers||[]).length;
+    var nb = (b.tiers||[]).length;
+    if(na !== nb) return na - nb;       // moins de méthodes en premier
+    return String(a.name).localeCompare(String(b.name));
+  });
+
+  // SECTION 3 — Application des filtres
+  var filtered = sorted.filter(applyKbFilters);
+
+  /* ═══════════════════════════════════════════════════════════════════
+     CORRECTION 3 — TRI PAR PRIX MAX CROISSANT
+     ─────────────────────────────────────────────────────────────────
+     Lorsqu'un filtre de prix (Min ou Max) est actif, le client veut
+     voir les boutiques ordonnées du plus petit montant max au plus
+     grand (100€, 200€, 300€, 500€, 1000€...). Le « prix max » d'un
+     shop = le plus grand `max` parmi toutes ses tranches/tiers.
+     Si aucun filtre de prix n'est actif, on conserve le tri par
+     défaut (nombre de méthodes croissant, puis nom alphabétique).
+     ═══════════════════════════════════════════════════════════════════ */
+  /* ═══════════════════════════════════════════════════════════════════
+     FIX TRI PRIX — Onglet "BASE DE CONNAISSANCES"
+     ─────────────────────────────────────────────────────────────
+     Quand un filtre de prix (Min ou Max) est actif, on trie les
+     boutiques par leur prix MAXIMUM croissant : 100€, 300€, 500€,
+     1000€... Le « prix max » d'une boutique = la plus grande valeur
+     `max` parmi ses tranches. Sinon, on garde le tri par défaut
+     (nombre de méthodes croissant, puis nom alphabétique).
+     Pattern : filteredShops.sort((a, b) => a.max - b.max)
+     ═══════════════════════════════════════════════════════════════════ */
+  var f = state.kbFilters || {};
+  var priceFilterActive = (f.priceMin !== null && f.priceMin !== undefined && !isNaN(f.priceMin))
+                       || (f.priceMax !== null && f.priceMax !== undefined && !isNaN(f.priceMax));
+  if(priceFilterActive){
+    // On précalcule le max de chaque shop une seule fois (perf + clarté)
+    filtered.forEach(function(s){
+      var m = 0;
+      var ts = s.tiers || [];
+      for(var k=0;k<ts.length;k++){
+        var v = parseFloat(ts[k].max);
+        if(!isNaN(v) && v > m) m = v;
+      }
+      s._maxPrice = m;
+    });
+    // Tri strict croissant par prix max (pattern demandé : a.max - b.max)
+    filtered.sort(function(a, b){
+      return a._maxPrice - b._maxPrice;
+    });
+  }
+
+  // CORRECTION 3 — PLUS D'EMPTY STATE : si aucun résultat, la grille
+  // est simplement vidée, aucun bloc "Aucune boutique ne correspond"
+  // ne s'affiche.
+  if(filtered.length === 0){
+    grid.innerHTML = '';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(function(s){
+    var tiersHTML = s.tiers.map(function(t){
+      var feeTxt = t.fee>0
+        ? '<span class="kb-tier-fee">'+t.fee.toLocaleString('fr-FR')+',00€</span>'
+        : '<span class="kb-tier-fee free">Gratuit</span>';
+      var elig = t.min.toLocaleString('fr-FR')+'€ → '+t.max.toLocaleString('fr-FR')+'€';
+      // SECTION 1.3 — sécurité : si une ancienne donnée contient encore "FTID (ou LIT)", on la remappe
+      var meth = String(t.methode||'').replace(/FTID\s*\(\s*ou\s*LIT\s*\)/i, 'FTID/LIT');
+      return '<div class="kb-tier">'
+        +'<div><div class="kb-tier-method">'+escHtml(meth)+'</div><div class="kb-tier-elig">'+elig+'</div></div>'
+        +feeTxt
+      +'</div>';
+    }).join('');
+
+    // SECTION 1.1 — Titre cliquable (lien invisible, color:inherit, pas de soulignement)
+    var nameTxt = escHtml(s.name);
+    var titleHTML = s.url
+      ? '<a href="'+escHtml(s.url)+'" target="_blank" rel="noopener noreferrer" '
+        +'style="text-decoration:none;color:inherit;cursor:pointer">'+nameTxt+'</a>'
+      : nameTxt;
+
+    // SECTION 4.1 — Icône "external-link" SVG cliquable, tout à droite de la ligne nom/délai
+    var extLinkHTML = s.url
+      ? '<a href="'+escHtml(s.url)+'" target="_blank" rel="noopener noreferrer" '
+        +'class="kb-ext-link" title="Ouvrir '+nameTxt+' dans un nouvel onglet" '
+        +'aria-label="Ouvrir '+nameTxt+'">'
+        +'<svg viewBox="0 0 24 24">'
+          +'<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>'
+          +'<polyline points="15 3 21 3 21 9"/>'
+          +'<line x1="10" y1="14" x2="21" y2="3"/>'
+        +'</svg>'
+      +'</a>'
+      : '';
+
+    // SECTION 3.4 — Catégorie affichée en tout petit, centré, sous la ligne Délai/Nom
+    var categorieTxt = escHtml(s.categorie || '—');
+    var categorieHTML = s.categorie
+      ? '<div class="kb-card-category">'+categorieTxt+'</div>'
+      : '';
+
+    // SECTION 1.2 — Bloc "Plateforme & Articles" (style en ligne strict, demandé par le brief)
+    // Majuscules sur "Plateforme" et "Vendeur" déjà appliquées via la donnée platformType.
+    var platformTxt = escHtml(s.platformType||'Plateforme');
+    var articlesTxt = (s.articles===undefined||s.articles===null||s.articles==='')
+      ? '' : escHtml(String(s.articles))+' articles';
+    var platBlockInner = articlesTxt
+      ? platformTxt+' &middot; '+articlesTxt
+      : platformTxt;
+    var platBlockHTML =
+      '<div class="kb-card-platform" '
+      +'style="font-size:0.72rem;color:#AAAAAA;padding-bottom:6px;margin-bottom:8px;'
+      +'border-bottom:1px solid #333333;text-align:center">'
+      +platBlockInner
+      +'</div>';
+
+    return '<div class="kb-card" data-method-count="'+s.tiers.length+'" data-category="'+escHtml(s.categorie||'')+'">'
+      +'<div class="kb-card-head">'
+        +logoBlock(s.name)
+        +'<div class="kb-card-name">'+titleHTML+'<small>Délai : '+escHtml(s.delai)+'</small>'+categorieHTML+'</div>'
+        +extLinkHTML
+      +'</div>'
+      +platBlockHTML
+      +'<div class="kb-card-tiers">'+tiersHTML+'</div>'
+    +'</div>';
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CORRECTION 4 — INIT FILTRES KB
+   Mise en œuvre via DÉLÉGATION ÉVÉNEMENTIELLE sur document : immunisée
+   contre les problèmes de timing (DOM pas prêt, re-render, etc.).
+   Garde-fou idempotent : ne s'exécute qu'une seule fois (window.__kbInit).
+   ═══════════════════════════════════════════════════════════════════ */
+function initKbFilters(){
+  if(window.__kbInit) return;
+  window.__kbInit = true;
+
+  // ───────── 3.1 — Recherche live (délégation) ─────────
+  document.addEventListener('input', function(e){
+    if(!e.target) return;
+    // Recherche par nom
+    if(e.target.id === 'kbSearch'){
+      var v = e.target.value.trim();
+      state.kbFilters.search = v;
+      var wrap = e.target.closest('.kb-search-wrap');
+      if(wrap){
+        if(v.length > 0) wrap.classList.add('has-value');
+        else wrap.classList.remove('has-value');
+      }
+      renderKB();
+      return;
+    }
+    // Prix min / max (déclenchement à CHAQUE frappe)
+    if(e.target.id === 'kbPriceMin' || e.target.id === 'kbPriceMax'){
+      var pMinEl = document.getElementById('kbPriceMin');
+      var pMaxEl = document.getElementById('kbPriceMax');
+      var vMin = (pMinEl && pMinEl.value !== '') ? parseFloat(pMinEl.value) : null;
+      var vMax = (pMaxEl && pMaxEl.value !== '') ? parseFloat(pMaxEl.value) : null;
+      state.kbFilters.priceMin = (vMin !== null && !isNaN(vMin)) ? vMin : null;
+      state.kbFilters.priceMax = (vMax !== null && !isNaN(vMax)) ? vMax : null;
+      updateFiltersIndicator();
+      renderKB();
+      return;
+    }
+  });
+
+  // ───────── Clic global (délégation) ─────────
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    if(!t) return;
+
+    // Bouton clear de la recherche
+    var clearBtn = t.closest && t.closest('#kbSearchClear');
+    if(clearBtn){
+      var s = document.getElementById('kbSearch');
+      if(s){ s.value = ''; s.focus(); }
+      state.kbFilters.search = '';
+      var wrap = clearBtn.closest('.kb-search-wrap');
+      if(wrap) wrap.classList.remove('has-value');
+      renderKB();
+      return;
+    }
+
+    // Pilule de catégorie
+    var catPill = t.closest && t.closest('#kbCats .kb-cat-pill');
+    if(catPill){
+      var allPills = document.querySelectorAll('#kbCats .kb-cat-pill');
+      for(var i=0;i<allPills.length;i++) allPills[i].classList.remove('active');
+      catPill.classList.add('active');
+      state.kbFilters.category = catPill.dataset.cat || 'all';
+      renderKB();
+      return;
+    }
+
+    // Pilule de délai (dans le popover filtres)
+    var delaiPill = t.closest && t.closest('.kb-fp-pill[data-delai]');
+    if(delaiPill){
+      var allDelai = document.querySelectorAll('.kb-fp-pill[data-delai]');
+      for(var j=0;j<allDelai.length;j++) allDelai[j].classList.remove('active');
+      delaiPill.classList.add('active');
+      state.kbFilters.delai = delaiPill.dataset.delai || 'all';
+      updateFiltersIndicator();
+      renderKB();
+      return;
+    }
+
+    // Toggle du popover Filtres
+    var fBtn = t.closest && t.closest('#kbFiltersBtn');
+    if(fBtn){
+      e.stopPropagation();
+      var pop = document.getElementById('kbFiltersPop');
+      if(pop) pop.classList.toggle('show');
+      return;
+    }
+
+    // Bouton Réinitialiser dans le popover
+    var resetBtn = t.closest && t.closest('#kbFiltersReset');
+    if(resetBtn){
+      state.kbFilters.delai = 'all';
+      state.kbFilters.priceMin = null;
+      state.kbFilters.priceMax = null;
+      var allDelai2 = document.querySelectorAll('.kb-fp-pill[data-delai]');
+      for(var k=0;k<allDelai2.length;k++) allDelai2[k].classList.remove('active');
+      var allPill = document.querySelector('.kb-fp-pill[data-delai="all"]');
+      if(allPill) allPill.classList.add('active');
+      var pMin = document.getElementById('kbPriceMin');
+      var pMax = document.getElementById('kbPriceMax');
+      if(pMin) pMin.value = '';
+      if(pMax) pMax.value = '';
+      updateFiltersIndicator();
+      renderKB();
+      return;
+    }
+
+    // Bouton Fermer du popover
+    var closeBtn = t.closest && t.closest('#kbFiltersClose');
+    if(closeBtn){
+      var pop2 = document.getElementById('kbFiltersPop');
+      if(pop2) pop2.classList.remove('show');
+      return;
+    }
+
+    // Clic hors popover : on ferme
+    var pop3 = document.getElementById('kbFiltersPop');
+    var fBtn2 = document.getElementById('kbFiltersBtn');
+    if(pop3 && pop3.classList.contains('show')){
+      if(!pop3.contains(t) && (!fBtn2 || !fBtn2.contains(t))){
+        pop3.classList.remove('show');
+      }
+    }
+  });
+}
+
+/* Indicateur "filtres actifs" (point rouge + bouton coloré) */
+function updateFiltersIndicator(){
+  var btn = $('#kbFiltersBtn');
+  var dot = $('#kbFiltersDot');
+  if(!btn || !dot) return;
+  var f = state.kbFilters;
+  var hasActive = (f.delai && f.delai !== 'all') || f.priceMin !== null || f.priceMax !== null;
+  if(hasActive){
+    btn.classList.add('active');
+    dot.style.display = 'block';
+  } else {
+    btn.classList.remove('active');
+    dot.style.display = 'none';
+  }
+}
+
+// Init des filtres au boot (idempotent, immédiat car la délégation
+// ne dépend pas de l'existence du DOM cible au moment du bind)
+initKbFilters();
+
+/* ═══════════════════════════════════════════════════════════════════
+   ANIMATIONS — shake login
+   ═══════════════════════════════════════════════════════════════════ */
+var styleShake = document.createElement('style');
+styleShake.textContent = '@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}';
+document.head.appendChild(styleShake);
+
+/* INIT logs */
+logEvent('BOOT','Interface QG chargée');
+</script>
+</body>
+</html>
